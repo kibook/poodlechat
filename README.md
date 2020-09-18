@@ -19,6 +19,8 @@ Based on the following resources:
 
 The following variables in [server.lua](server.lua) control the Discord integration:
 
+| Variable          | Description                                                                          |
+|-------------------|--------------------------------------------------------------------------------------|
 | `DISCORD_WEBHOOK` | The webhook URL to use to send messages to a channel.                                |
 | `DISCORD_NAME`    | The name to use when sending event messages (joins/disconnects).                     |
 | `DISCORD_AVATAR`  | The avatar to use when sending event messages or if no avatar is found for a player. |
