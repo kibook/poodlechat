@@ -195,13 +195,15 @@ function Whisper(source, id, message)
 	end
 
 	-- Then, try by name
-	id = string.lower(id)
-	for _, playerId in ipairs(GetPlayers()) do
-		local playerName = string.lower(GetPlayerName(playerId))
-		if playerName == id then
-			id = playerId
-			found = true
-			break
+	if not found then
+		id = string.lower(id)
+		for _, playerId in ipairs(GetPlayers()) do
+			local playerName = string.lower(GetPlayerName(playerId))
+			if playerName == id then
+				id = playerId
+				found = true
+				break
+			end
 		end
 	end
 
