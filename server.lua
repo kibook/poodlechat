@@ -198,9 +198,13 @@ function Whisper(source, id, message)
 	end
 
 	if found then
+		-- Echo the message to the sender's chat
 		TriggerClientEvent('poodlechat:whisperEcho', source, id, GetPlayerName(id), message)
+		-- Send the message to the recipient
 		TriggerClientEvent('poodlechat:whisper', id, source, name, message)
+		-- Set the /reply target for sender and recipient
 		TriggerClientEvent('poodlechat:setReplyTo', id, source)
+		TriggerClientEvent('poodlechat:setReplyTo', source, id)
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
 	end
