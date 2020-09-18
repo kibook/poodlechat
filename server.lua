@@ -1,17 +1,26 @@
+
+-- DISCORD CONFIGURATION
+
 -- URL of the Discord webhook. Leave as '' to disable sending messages to Discord
 local DISCORD_WEBHOOK = ''
+
 -- The name to use on Discord for system messages
 local DISCORD_NAME = ''
+
 -- The default avatar to use on Discord
 local DISCORD_AVATAR = ''
--- Discord API URLs
-local DISCORD_API = 'https://discordapp.com/api/users/'
-local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
+
 -- Discord bot token for getting player avatars from Discord
 local DISCORD_BOT = ''
+
 -- Steam key for getting player avatars from Steam. Leave as '' to disable Steam integration.
 local STEAM_KEY = ''
--- Steam API URL
+
+-- END OF DISCORD CONFIGURATION
+
+-- API URLs
+local DISCORD_API = 'https://discordapp.com/api/users/'
+local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
 
 function GetIDFromSource(Type, ID)
