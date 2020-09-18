@@ -61,7 +61,7 @@ Sends a message to the last player that sent you a private message (`/whisper`) 
 /say [message]
 ```
 
-Sends a message to nearvy players. The default text chat is also overridden to be proximity-based.
+Sends a message to nearby players. The default text chat is also overridden to be proximity-based.
 
 ```
 /whisper [player] [message]
