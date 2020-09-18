@@ -1,4 +1,3 @@
-
 -- DISCORD CONFIGURATION
 
 -- URL of the Discord webhook. Leave as '' to disable sending messages to Discord
