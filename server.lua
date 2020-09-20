@@ -15,6 +15,18 @@ local DISCORD_BOT = ''
 -- Steam key for getting player avatars from Steam. Leave as '' to disable Steam integration.
 local STEAM_KEY = ''
 
+-- Roles that can appear in front of player names, based on an ace.
+--
+-- Example:
+--   {name = 'Admin', ace = 'chat.admin'}
+--
+-- To show this role for all members of group.admin:
+--   add_ace group.admin chat.admin allow
+local Roles = {
+	--{name = 'Admin', ace = 'chat.admin'},
+	--{name = 'Moderator', ace = 'chat.moderator'}
+}
+
 -- END OF DISCORD CONFIGURATION
 
 -- API URLs
@@ -55,13 +67,31 @@ function SendToDiscord(name, message, color)
 	PerformHttpRequest(DISCORD_WEBHOOK, function(err, text, headers) end, 'POST', json.encode({username = DISCORD_NAME, embeds = connect, avatar_url = DISCORD_IMAGE}), { ['Content-Type'] = 'application/json' })
 end
 
+function GetNameWithRole(source)
+	local name = GetPlayerName(source)
+	local role = nil
+
+	for i = 1, #Roles do
+		if IsPlayerAceAllowed(tostring(source), Roles[i].ace) then
+			role = Roles[i].name
+			break
+		end
+	end
+
+	if role then
+		return role .. ' | ' .. name
+	else
+		return name
+	end
+end
+
 -- Override default /say command
 RegisterCommand('say', function(source, args, user)
 	local message = table.concat(args, " ")
 
 	-- If source is a player, send a local message
 	if source > 0 then
-		local name = GetPlayerName(source)
+		local name = GetNameWithRole(source)
 
 		if message == "" then
 			return
@@ -77,7 +107,7 @@ end, false)
 -- Send local messages by default
 AddEventHandler('chatMessage', function(source, name, message)
 	if string.sub(message, 1, string.len("/")) ~= "/" then
-		local name = GetPlayerName(source)
+		local name = GetNameWithRole(source)
 		TriggerClientEvent("poodlechat:localMessage", -1, source, name, message)
 	end
 	CancelEvent()
@@ -142,7 +172,7 @@ function SendMessageWithSteamAvatar(source, name, message)
 end
 
 function GlobalCommand(source, args, user)
-	local name = GetPlayerName(source)
+	local name = GetNameWithRole(source)
 	local message = table.concat(args, ' ')
 
 	if message == '' then
@@ -179,7 +209,7 @@ RegisterCommand('g', function(source, args, user)
 end, false)
 
 function Whisper(source, id, message)
-	local name = GetPlayerName(source)
+	local name = GetNameWithRole(source)
 	local found = false
 
 	if message == "" then
