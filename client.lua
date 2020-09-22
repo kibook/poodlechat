@@ -1,3 +1,9 @@
+-- Distance at which local messages are shown
+local LocalMessageDistance = 50
+
+-- Distance at which action messages are shown
+local ActionDistance = 50
+
 -- Last player to send you a private message
 local ReplyTo = nil
 
@@ -5,24 +11,32 @@ function AddLocalMessage(name, message)
 	TriggerEvent('chat:addMessage', {color = {0, 153, 204}, args = {'[Local] ' .. name, message}})
 end
 
-RegisterNetEvent('poodlechat:localMessage')
-AddEventHandler('poodlechat:localMessage', function(id, name, message)
+function IsInProximity(id, distance)
 	local myId = PlayerId()
 	local pid = GetPlayerFromServerId(id)
+
 	if pid == myId then
-		AddLocalMessage(name, message)
-	elseif GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(myId)), GetEntityCoords(GetPlayerPed(pid)), true) < 19.999 then
+		return true
+	end
+
+	local myPed = GetPlayerPed(myId)
+	local ped = GetPlayerPed(pid)
+	local myCoords = GetEntityCoords(myPed)
+	local coords = GetEntityCoords(ped)
+
+	return GetDistanceBetweenCoords(myCoords, coords, true) < distance
+end
+
+RegisterNetEvent('poodlechat:localMessage')
+AddEventHandler('poodlechat:localMessage', function(id, name, message)
+	if IsInProximity(id, LocalMessageDistance) then
 		AddLocalMessage(name, message)
 	end
 end)
 
 RegisterNetEvent('poodlechat:action')
 AddEventHandler('poodlechat:action', function(id, name, message)
-	local myId = PlayerId()
-	local pid = GetPlayerFromServerId(id)
-	if pid == myId then
-		TriggerEvent('chat:addMessage', {color = {200, 0, 255}, args = {'^6' .. name .. ' ' .. message}})
-	elseif GetDistanceBetweenCoords(GetEntityCoords(GetPlayerPed(myId)), GetEntityCoords(GetPlayerPed(pid)), true) < 19.999 then
+	if IsInProximity(id, ActionDistance) then
 		TriggerEvent('chat:addMessage', {color = {200, 0, 255}, args = {'^6' .. name .. ' ' .. message}})
 	end
 end)
