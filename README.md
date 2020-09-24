@@ -17,6 +17,8 @@ Based on the following resources:
 
 # Configuration
 
+## Discord
+
 The following variables in [server.lua](server.lua) control the Discord integration:
 
 | Variable          | Description                                                                          |
@@ -25,9 +27,29 @@ The following variables in [server.lua](server.lua) control the Discord integrat
 | `DISCORD_NAME`    | The name to use when sending event messages (joins/disconnects).                     |
 | `DISCORD_AVATAR`  | The avatar to use when sending event messages or if no avatar is found for a player. |
 | `DISCORD_BOT`     | A Discord bot token to use in order to retrieve avatars from Discord.                |
-| `STEAM_KEY`       | A Steam key to to use in order to retrieve avatars from Steam.                       |
+| `STEAM_KEY`       | A Steam key to use in order to retrieve avatars from Steam.                          |
 
 All of these are optional, and can be left with their default value (empty string, `''`) to disable the Discord integration.
+
+## Roles
+
+Roles are labels that appear next to a player's name in chat, such as "Admin" or "Moderator". Each role is associated with an ace, so that any players with that ace will receive that role. The list of available roles is configured in [server.lua](server.lua).
+
+Example:
+
+```
+local Roles = {
+    {name = 'Admin', ace = 'chat.admin'},
+    {name = 'Moderator', ace = 'chat.moderator'}
+}
+```
+
+In `server.cfg`:
+
+```
+add_ace group.admin chat.admin allow
+add_ace group.moderator chat.moderator allow
+```
 
 # Commands
 
