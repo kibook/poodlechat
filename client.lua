@@ -15,10 +15,6 @@ function IsInProximity(id, distance)
 	local myId = PlayerId()
 	local pid = GetPlayerFromServerId(id)
 
-	if pid == 0 then
-		return false
-	end
-
 	if pid == myId then
 		return true
 	end
