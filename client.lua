@@ -15,12 +15,21 @@ function IsInProximity(id, distance)
 	local myId = PlayerId()
 	local pid = GetPlayerFromServerId(id)
 
+	if pid == 0 then
+		return false
+	end
+
 	if pid == myId then
 		return true
 	end
 
 	local myPed = GetPlayerPed(myId)
 	local ped = GetPlayerPed(pid)
+
+	if ped == 0 then
+		return false
+	end
+
 	local myCoords = GetEntityCoords(myPed)
 	local coords = GetEntityCoords(ped)
 
