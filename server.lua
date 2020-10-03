@@ -110,6 +110,7 @@ end, false)
 AddEventHandler('chatMessage', function(source, name, message)
 	if string.sub(message, 1, string.len("/")) ~= "/" then
 		local name = GetNameWithRole(source)
+		message = Emojit(message)
 		TriggerClientEvent("poodlechat:localMessage", -1, source, name, message)
 	end
 	CancelEvent()
