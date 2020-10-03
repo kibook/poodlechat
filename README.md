@@ -7,6 +7,7 @@ Chat resource used on the Poodle's Palace FiveM and RedM servers:
 Based on the following resources:
 - https://github.com/DevLanceGood/RPChat
 - https://github.com/Tazi0/Server-Logging
+- https://forum.cfx.re/t/release-emojis-for-chat-fivemojis-1-0/150713
 
 # Features
 

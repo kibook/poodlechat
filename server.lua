@@ -89,13 +89,15 @@ end
 RegisterCommand('say', function(source, args, user)
 	local message = table.concat(args, " ")
 
+	if message == "" then
+		return
+	end
+
+	message = Emojit(message)
+
 	-- If source is a player, send a local message
 	if source > 0 then
 		local name = GetNameWithRole(source)
-
-		if message == "" then
-			return
-		end
 
 		TriggerClientEvent('poodlechat:localMessage', -1, source, name, message)
 	-- If source is console, send to all players
@@ -120,6 +122,8 @@ RegisterCommand('me', function(source, args, user)
 	if message == "" then
 		return
 	end
+
+	message = Emojit(message)
 
 	TriggerClientEvent("poodlechat:action", -1, source, name, message)
 end, false)
@@ -179,6 +183,8 @@ function GlobalCommand(source, args, user)
 		return
 	end
 
+	message = Emojit(message)
+
 	TriggerClientEvent('chat:addMessage', -1, {color = {212, 175, 55}, args = {'[Global] ' .. name, message}})
 
 	-- Send global messages to Discord
@@ -215,6 +221,8 @@ function Whisper(source, id, message)
 	if message == "" then
 		return
 	end
+
+	message = Emojit(message)
 
 	-- First, search by ID
 	for _, playerId in ipairs(GetPlayers()) do
