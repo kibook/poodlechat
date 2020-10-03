@@ -1,4 +1,4 @@
--- DISCORD CONFIGURATION
+-- CONFIGURATION
 
 -- URL of the Discord webhook. Leave as '' to disable sending messages to Discord
 local DISCORD_WEBHOOK = ''
@@ -27,7 +27,7 @@ local Roles = {
 	--{name = 'Moderator', ace = 'chat.moderator'}
 }
 
--- END OF DISCORD CONFIGURATION
+-- END OF CONFIGURATION
 
 -- API URLs
 local DISCORD_API = 'https://discordapp.com/api/users/'
