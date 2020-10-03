@@ -111,3 +111,10 @@ TriggerEvent('chat:addSuggestion', '/w', 'Send a private message', {
 	{name = "player", help = "ID or name of the player to message"},
 	{name = "message", help = "The message to send"}
 })
+
+-- Emoji suggestions
+for i = 1, #emoji do
+	for k = 1, #emoji[i][1] do
+		TriggerEvent('chat:addSuggestion', emoji[i][1][k])
+	end
+end

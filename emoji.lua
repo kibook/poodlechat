@@ -263,99 +263,99 @@ emoji = {
 	}, {
 		{":raised_hands:"},
 		"🙌",
-		
+
 	}, {
 		{":clap:"},
 		"👏",
-		
+
 	}, {
 		{":wave:"},
 		"👋",
-		
+
 	}, {
 		{":thumbsup:", ":+1:", ":thumbup:"},
 		"👍",
-		
+
 	}, {
 		{":thumbsdown:", ":-1:", ":thumbdown:"},
 		"👎",
-		
+
 	}, {
 		{":punch:"},
 		"👊",
-		
+
 	}, {
 		{":fist:"},
 		"✊",
-		
+
 	}, {
 		{":v:"},
 		"✌",
-		
+
 	}, {
 		{":ok_hand:"},
 		"👌",
-		
+
 	}, {
 		{":raised_hand:"},
 		"✋",
-		
+
 	}, {
 		{":open_hands:"},
 		"👐",
-		
+
 	}, {
 		{":muscle:"},
 		"💪",
-		
+
 	}, {
 		{":pray:"},
 		"🙏",
-		
+
 	}, {
 		{":point_up:"},
 		"☝",
-		
+
 	}, {
 		{":point_up_2:"},
 		"👆",
-		
+
 	}, {
 		{":point_down:"},
 		"👇",
-		
+
 	}, {
 		{":point_left:"},
 		"👈",
-		
+
 	}, {
 		{":point_right:"},
 		"👉",
-		
+
 	}, {
 		{":middle_finger:", ":reversed_hand_with_middle_finger_extended:"},
 		"🖕",
-		
+
 	}, {
 		{":hand_splayed:", ":raised_hand_with_fingers_splayed:"},
 		"🖐",
-		
+
 	}, {
 		{":metal:", ":sign_of_the_horns:"},
 		"🤘",
-		
+
 	}, {
 		{":vulcan:", ":raised_hand_with_part_between_middle_and_ring_fingers:"},
 		"🖖",
-		
+
 	}, {
 		{":writing_hand:"},
 		"✍",
-		
+
 	}, {
 		{":nail_care:"},
 		"💅",
-		
+
 	}, {
 		{":lips:"},
 		"👄"
@@ -365,11 +365,11 @@ emoji = {
 	}, {
 		{":ear:"},
 		"👂",
-		
+
 	}, {
 		{":nose:"},
 		"👃",
-		
+
 	}, {
 		{":eye:"},
 		"👁"
@@ -388,87 +388,87 @@ emoji = {
 	}, {
 		{":baby:"},
 		"👶",
-		
+
 	}, {
 		{":boy:"},
 		"👦",
-		
+
 	}, {
 		{":girl:"},
 		"👧",
-		
+
 	}, {
 		{":man:"},
 		"👨",
-		
+
 	}, {
 		{":woman:"},
 		"👩",
-		
+
 	}, {
 		{":person_with_blond_hair:"},
 		"👱",
-		
+
 	}, {
 		{":older_man:"},
 		"👴",
-		
+
 	}, {
 		{":older_woman:", ":grandma:"},
 		"👵",
-		
+
 	}, {
 		{":man_with_gua_pi_mao:"},
 		"👲",
-		
+
 	}, {
 		{":man_with_turban:"},
 		"👳",
-		
+
 	}, {
 		{":cop:"},
 		"👮",
-		
+
 	}, {
 		{":construction_worker:"},
 		"👷",
-		
+
 	}, {
 		{":guardsman:"},
 		"💂",
-		
+
 	}, {
 		{":spy:", ":sleuth_or_spy:"},
 		"🕵",
-		
+
 	}, {
 		{":santa:"},
 		"🎅",
-		
+
 	}, {
 		{":angel:"},
 		"👼",
-		
+
 	}, {
 		{":princess:"},
 		"👸",
-		
+
 	}, {
 		{":bride_with_veil:"},
 		"👰",
-		
+
 	}, {
 		{":walking:"},
 		"🚶",
-		
+
 	}, {
 		{":runner:"},
 		"🏃",
-		
+
 	}, {
 		{":dancer:"},
 		"💃",
-		
+
 	}, {
 		{":dancers:"},
 		"👯"
@@ -484,39 +484,39 @@ emoji = {
 	}, {
 		{":bow:"},
 		"🙇",
-		
+
 	}, {
 		{":information_desk_person:"},
 		"💁",
-		
+
 	}, {
 		{":no_good:"},
 		"🙅",
-		
+
 	}, {
 		{":ok_woman:"},
 		"🙆",
-		
+
 	}, {
 		{":raising_hand:"},
 		"🙋",
-		
+
 	}, {
 		{":person_with_pouting_face:"},
 		"🙎",
-		
+
 	}, {
 		{":person_frowning:"},
 		"🙍",
-		
+
 	}, {
 		{":haircut:"},
 		"💇",
-		
+
 	}, {
 		{":massage:"},
 		"💆",
-		
+
 	}, {
 		{":couple_with_heart:"},
 		"💑"
@@ -691,59 +691,59 @@ emoji = {
 	}, {
 		{":prince:"},
 		"🤴",
-		
+
 	}, {
 		{":man_in_tuxedo:"},
 		"🤵",
-		
+
 	}, {
 		{":mrs_claus:", ":mother_christmas:"},
 		"🤶",
-		
+
 	}, {
 		{":face_palm:", ":facepalm:"},
 		"🤦",
-		
+
 	}, {
 		{":shrug:"},
 		"🤷",
-		
+
 	}, {
 		{":pregnant_woman:", ":expecting_woman:"},
 		"🤰",
-		
+
 	}, {
 		{":selfie:"},
 		"🤳",
-		
+
 	}, {
 		{":man_dancing:", ":male_dancer:"},
 		"🕺",
-		
+
 	}, {
 		{":call_me:", ":call_me_hand:"},
 		"🤙",
-		
+
 	}, {
 		{":raised_back_of_hand:", ":back_of_hand:"},
 		"🤚",
-		
+
 	}, {
 		{":left_facing_fist:", ":left_fist:"},
 		"🤛",
-		
+
 	}, {
 		{":right_facing_fist:", ":right_fist:"},
 		"🤜",
-		
+
 	}, {
 		{":handshake:", ":shaking_hands:"},
 		"🤝",
-		
+
 	}, {
 		{":fingers_crossed:", ":hand_with_index_and_middle_finger_crossed:"},
 		"🤞",
-		
+
 	},
 	{
 		{":dog:"},
@@ -1539,7 +1539,7 @@ emoji = {
 	}, {
 		{":snowboarder:"},
 		"🏂",
-		
+
 	}, {
 		{":ice_skate:"},
 		"⛸"
@@ -1552,39 +1552,39 @@ emoji = {
 	}, {
 		{":rowboat:"},
 		"🚣",
-		
+
 	}, {
 		{":swimmer:"},
 		"🏊",
-		
+
 	}, {
 		{":surfer:"},
 		"🏄",
-		
+
 	}, {
 		{":bath:"},
 		"🛀",
-		
+
 	}, {
 		{":basketball_player:", ":person_with_ball:"},
 		"⛹",
-		
+
 	}, {
 		{":lifter:", ":weight_lifter:"},
 		"🏋",
-		
+
 	}, {
 		{":bicyclist:"},
 		"🚴",
-		
+
 	}, {
 		{":mountain_bicyclist:"},
 		"🚵",
-		
+
 	}, {
 		{":horse_racing:"},
 		"🏇",
-		
+
 	}, {
 		{":levitate:", ":man_in_business_suit_levitating:"},
 		"🕴"
@@ -1669,15 +1669,15 @@ emoji = {
 	}, {
 		{":cartwheel:", ":person_doing_cartwheel:"},
 		"🤸",
-		
+
 	}, {
 		{":juggling:", ":juggler:"},
 		"🤹",
-		
+
 	}, {
 		{":wrestlers:", ":wrestling:"},
 		"🤼",
-		
+
 	}, {
 		{":boxing_glove:", ":boxing_gloves:"},
 		"🥊"
@@ -1687,11 +1687,11 @@ emoji = {
 	}, {
 		{":water_polo:"},
 		"🤽",
-		
+
 	}, {
 		{":handball:"},
 		"🤾",
-		
+
 	}, {
 		{":goal:", ":goal_net:"},
 		"🥅"
@@ -4280,10 +4280,10 @@ emoji = {
 }
 
 function Emojit(text)
-    for i = 1, #emoji do
-      for k = 1, #emoji[i][1] do
-        text = string.gsub(text, emoji[i][1][k], emoji[i][2])
-      end
-    end
-    return text
+	for i = 1, #emoji do
+		for k = 1, #emoji[i][1] do
+			text = string.gsub(text, emoji[i][1][k], emoji[i][2])
+		end
+	end
+	return text
 end
