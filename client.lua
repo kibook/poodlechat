@@ -83,38 +83,40 @@ AddEventHandler('poodlechat:setReplyTo', function(id)
 	ReplyTo = tostring(id)
 end)
 
--- Command documentation
-TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window', {})
-TriggerEvent('chat:addSuggestion', '/global', 'Send a message to all players', {
-	{name = 'message', help = 'The message to send'}
-})
-TriggerEvent('chat:addSuggestion', '/g', 'Send a message to all players', {
-	{name = 'message', help = 'The message to send'}
-})
-TriggerEvent('chat:addSuggestion', '/me', 'Perform an action', {
-	{name = 'action', help = 'The action to perform'}
-})
-TriggerEvent('chat:addSuggestion', '/reply', 'Reply to the last whisper', {
-	{name = 'message', help = 'The message to send'}
-})
-TriggerEvent('chat:addSuggestion', '/r', 'Reply to the last whisper', {
-	{name = 'message', help = 'The message to send'}
-})
-TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
-	{name = "message", help = "The message to send"}
-})
-TriggerEvent('chat:addSuggestion', '/whisper', 'Send a private message', {
-	{name = "player", help = "ID or name of the player to message"},
-	{name = "message", help = "The message to send"}
-})
-TriggerEvent('chat:addSuggestion', '/w', 'Send a private message', {
-	{name = "player", help = "ID or name of the player to message"},
-	{name = "message", help = "The message to send"}
-})
+CreateThread(function()
+	-- Command documentation
+	TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window', {})
+	TriggerEvent('chat:addSuggestion', '/global', 'Send a message to all players', {
+		{name = 'message', help = 'The message to send'}
+	})
+	TriggerEvent('chat:addSuggestion', '/g', 'Send a message to all players', {
+		{name = 'message', help = 'The message to send'}
+	})
+	TriggerEvent('chat:addSuggestion', '/me', 'Perform an action', {
+		{name = 'action', help = 'The action to perform'}
+	})
+	TriggerEvent('chat:addSuggestion', '/reply', 'Reply to the last whisper', {
+		{name = 'message', help = 'The message to send'}
+	})
+	TriggerEvent('chat:addSuggestion', '/r', 'Reply to the last whisper', {
+		{name = 'message', help = 'The message to send'}
+	})
+	TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
+		{name = "message", help = "The message to send"}
+	})
+	TriggerEvent('chat:addSuggestion', '/whisper', 'Send a private message', {
+		{name = "player", help = "ID or name of the player to message"},
+		{name = "message", help = "The message to send"}
+	})
+	TriggerEvent('chat:addSuggestion', '/w', 'Send a private message', {
+		{name = "player", help = "ID or name of the player to message"},
+		{name = "message", help = "The message to send"}
+	})
 
--- Emoji suggestions
-for i = 1, #emoji do
-	for k = 1, #emoji[i][1] do
-		TriggerEvent('chat:addSuggestion', emoji[i][1][k])
+	-- Emoji suggestions
+	for i = 1, #emoji do
+		for k = 1, #emoji[i][1] do
+			TriggerEvent('chat:addSuggestion', emoji[i][1][k])
+		end
 	end
-end
+end)
