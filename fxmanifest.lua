@@ -2,7 +2,7 @@ fx_version 'adamant'
 game 'common'
 
 description 'PoodleChat'
-version '2.0.0'
+version '2.0.1'
 
 client_scripts {
 	'config.lua',
