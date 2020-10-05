@@ -24,27 +24,27 @@ Based on the following resources:
 
 The following variables in [config.lua](config.lua) control general settings for the chat:
 
-| Variable                 | Description                                                           |
-|--------------------------|-----------------------------------------------------------------------|
-| `ACTION_COLOR`           | The colour for action messages (/me).                                 |
-| `DEFAULT_LOCAL_COLOR`    | The default colour for local messages.                                |
-| `DEFAULT_GLOBAL_COLOR`   | The default colour for global messages.                               |
-| `WHISPER_COLOR`          | The colour for received whisper messages.                             |
-| `WHISPER_ECHO_COLOR`     | The colour for sent whisper messages.                                 |
-| `ACTION_DISTANCE`        | The distance between players at which actions will be visible.        |
-| `LOCAL_MESSAGE_DISTANCE` | The distance between players at which local messages will be visible. |
+| Variable                      | Description                                                           |
+|-------------------------------|-----------------------------------------------------------------------|
+| `Config.ActionColor`          | The colour for action messages (/me).                                 |
+| `Config.DefaultLocalColor`    | The default colour for local messages.                                |
+| `Config.DefaultGlobalColor`   | The default colour for global messages.                               |
+| `Config.WhisperColor`         | The colour for received whisper messages.                             |
+| `Config.WhisperEchoColor`     | The colour for sent whisper messages.                                 |
+| `Config.ActionDistance`       | The distance between players at which actions will be visible.        |
+| `Config.LocalMessageDistance` | The distance between players at which local messages will be visible. |
 
 ## Discord
 
 The following variables in [config.lua](config.lua) control the Discord integration:
 
-| Variable          | Description                                                                          |
-|-------------------|--------------------------------------------------------------------------------------|
-| `DISCORD_WEBHOOK` | The webhook URL to use to send messages to a channel.                                |
-| `DISCORD_NAME`    | The name to use when sending event messages (joins/disconnects).                     |
-| `DISCORD_AVATAR`  | The avatar to use when sending event messages or if no avatar is found for a player. |
-| `DISCORD_BOT`     | A Discord bot token to use in order to retrieve avatars from Discord.                |
-| `STEAM_KEY`       | A Steam key to use in order to retrieve avatars from Steam.                          |
+| Variable                 | Description                                                                          |
+|--------------------------|--------------------------------------------------------------------------------------|
+| `Config.DiscordWebhook`  | The webhook URL to use to send messages to a channel.                                |
+| `Config.DiscordName`     | The name to use when sending event messages (joins/disconnects).                     |
+| `Config.DiscordAvatar`   | The avatar to use when sending event messages or if no avatar is found for a player. |
+| `Config.DiscordBotToken` | A Discord bot token to use in order to retrieve avatars from Discord.                |
+| `Config.SteamKey`        | A Steam key to use in order to retrieve avatars from Steam.                          |
 
 All of these are optional, and can be left with their default value (empty string, `''`) to disable the Discord integration.
 
@@ -57,7 +57,7 @@ The list of available roles is configured in [config.lua](config.lua).
 Example:
 
 ```
-ROLES = {
+Config.Roles = {
     {name = 'Admin', ace = 'chat.admin'},
     {name = 'Moderator', color = {0, 255, 0}, ace = 'chat.moderator'}
 }
