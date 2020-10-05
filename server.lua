@@ -16,20 +16,21 @@ local DISCORD_BOT = ''
 local STEAM_KEY = ''
 
 -- Roles that can appear in front of player names, based on an ace.
+-- Optionally, each role can be given a custom color.
 --
 -- Example:
---   {name = 'Admin', ace = 'chat.admin'}
+--   {name = 'Admin', color = {255, 0, 0}, ace = 'chat.admin'}
 --
 -- To show this role for all members of group.admin:
 --   add_ace group.admin chat.admin allow
 local Roles = {
-	--{name = 'Admin', ace = 'chat.admin'},
-	--{name = 'Moderator', ace = 'chat.moderator'}
+	--{name = 'Admin', ace = 'chat.admin'}, -- "Admin" role, default colors
+	--{name = 'Moderator', color = {0, 255, 0}, ace = 'chat.moderator'} -- "Moderator" role, custom color
 }
 
-
-local DefaultLocalColor   = {  0, 153, 204}
-local DefaultGlobalColor  = {212, 175,  55}
+-- Default colors for local and global messages
+local DefaultLocalColor  = {  0, 153, 204}
+local DefaultGlobalColor = {212, 175,  55}
 
 -- END OF CONFIGURATION
 

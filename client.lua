@@ -4,6 +4,9 @@ local LocalMessageDistance = 50
 -- Distance at which action messages are shown
 local ActionDistance = 50
 
+-- Color for action messages
+local ActionColor = {200, 0, 255}
+
 -- Last player to send you a private message
 local ReplyTo = nil
 
@@ -42,7 +45,7 @@ end)
 RegisterNetEvent('poodlechat:action')
 AddEventHandler('poodlechat:action', function(id, name, message)
 	if IsInProximity(id, ActionDistance) then
-		TriggerEvent('chat:addMessage', {color = {200, 0, 255}, args = {'^6' .. name .. ' ' .. message}})
+		TriggerEvent('chat:addMessage', {color = ActionColor, args = {'^6' .. name .. ' ' .. message}})
 	end
 end)
 
