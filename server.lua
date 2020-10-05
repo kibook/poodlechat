@@ -42,9 +42,9 @@ function GetNameWithRoleAndColor(source)
 	local name = GetPlayerName(source)
 	local role = nil
 
-	for i = 1, #Roles do
-		if IsPlayerAceAllowed(tostring(source), Roles[i].ace) then
-			role = Roles[i]
+	for i = 1, #Config.Roles do
+		if IsPlayerAceAllowed(tostring(source), Config.Roles[i].ace) then
+			role = Config.Roles[i]
 			break
 		end
 	end
