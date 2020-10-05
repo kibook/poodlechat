@@ -45,7 +45,7 @@ end)
 RegisterNetEvent('poodlechat:action')
 AddEventHandler('poodlechat:action', function(id, name, message)
 	if IsInProximity(id, ActionDistance) then
-		TriggerEvent('chat:addMessage', {color = ActionColor, args = {'^6' .. name .. ' ' .. message}})
+		TriggerEvent('chat:addMessage', {color = ActionColor, args = {'^*' .. name .. ' ' .. message}})
 	end
 end)
 
