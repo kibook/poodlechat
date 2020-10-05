@@ -27,6 +27,10 @@ local Roles = {
 	--{name = 'Moderator', ace = 'chat.moderator'}
 }
 
+
+local DefaultLocalColor   = {  0, 153, 204}
+local DefaultGlobalColor  = {212, 175,  55}
+
 -- END OF CONFIGURATION
 
 -- API URLs
@@ -67,21 +71,21 @@ function SendToDiscord(name, message, color)
 	PerformHttpRequest(DISCORD_WEBHOOK, function(err, text, headers) end, 'POST', json.encode({username = DISCORD_NAME, embeds = connect, avatar_url = DISCORD_IMAGE}), { ['Content-Type'] = 'application/json' })
 end
 
-function GetNameWithRole(source)
+function GetNameWithRoleAndColor(source)
 	local name = GetPlayerName(source)
 	local role = nil
 
 	for i = 1, #Roles do
 		if IsPlayerAceAllowed(tostring(source), Roles[i].ace) then
-			role = Roles[i].name
+			role = Roles[i]
 			break
 		end
 	end
 
 	if role then
-		return role .. ' | ' .. name
+		return role.name .. ' | ' .. name, role.color
 	else
-		return name
+		return name, nil
 	end
 end
 
@@ -97,9 +101,13 @@ RegisterCommand('say', function(source, args, user)
 
 	-- If source is a player, send a local message
 	if source > 0 then
-		local name = GetNameWithRole(source)
+		local name, color = GetNameWithRoleAndColor(source)
 
-		TriggerClientEvent('poodlechat:localMessage', -1, source, name, message)
+		if not color then
+			color = DefaultLocalColor
+		end
+
+		TriggerClientEvent('poodlechat:localMessage', -1, source, name, color, message)
 	-- If source is console, send to all players
 	else
 		TriggerClientEvent('chat:addMessage', -1, {color = {255, 255, 255}, args = {'console', message}})
@@ -109,9 +117,15 @@ end, false)
 -- Send local messages by default
 AddEventHandler('chatMessage', function(source, name, message)
 	if string.sub(message, 1, string.len("/")) ~= "/" then
-		local name = GetNameWithRole(source)
+		local name, color = GetNameWithRoleAndColor(source)
+
+		if not color then
+			color = DefaultLocalColor
+		end
+
 		message = Emojit(message)
-		TriggerClientEvent("poodlechat:localMessage", -1, source, name, message)
+
+		TriggerClientEvent("poodlechat:localMessage", -1, source, name, color, message)
 	end
 	CancelEvent()
 end)
@@ -176,17 +190,22 @@ function SendMessageWithSteamAvatar(source, name, message)
 	return false
 end
 
+
 function GlobalCommand(source, args, user)
-	local name = GetNameWithRole(source)
+	local name, color = GetNameWithRoleAndColor(source)
 	local message = table.concat(args, ' ')
 
 	if message == '' then
 		return
 	end
 
+	if not color then
+		color = DefaultGlobalColor
+	end
+
 	message = Emojit(message)
 
-	TriggerClientEvent('chat:addMessage', -1, {color = {212, 175, 55}, args = {'[Global] ' .. name, message}})
+	TriggerClientEvent('chat:addMessage', -1, {color = color, args = {'[Global] ' .. name, message}})
 
 	-- Send global messages to Discord
 	if DISCORD_WEBHOOK ~= '' then
@@ -216,7 +235,7 @@ RegisterCommand('g', function(source, args, user)
 end, false)
 
 function Whisper(source, id, message)
-	local name = GetNameWithRole(source)
+	local name, color = GetNameWithRoleAndColor(source)
 	local found = false
 
 	if message == "" then

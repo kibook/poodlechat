@@ -7,8 +7,8 @@ local ActionDistance = 50
 -- Last player to send you a private message
 local ReplyTo = nil
 
-function AddLocalMessage(name, message)
-	TriggerEvent('chat:addMessage', {color = {0, 153, 204}, args = {'[Local] ' .. name, message}})
+function AddLocalMessage(name, color, message)
+	TriggerEvent('chat:addMessage', {color = color, args = {'[Local] ' .. name, message}})
 end
 
 function IsInProximity(id, distance)
@@ -33,9 +33,9 @@ function IsInProximity(id, distance)
 end
 
 RegisterNetEvent('poodlechat:localMessage')
-AddEventHandler('poodlechat:localMessage', function(id, name, message)
+AddEventHandler('poodlechat:localMessage', function(id, name, color, message)
 	if IsInProximity(id, LocalMessageDistance) then
-		AddLocalMessage(name, message)
+		AddLocalMessage(name, color, message)
 	end
 end)
 
