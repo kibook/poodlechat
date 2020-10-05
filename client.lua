@@ -1,14 +1,12 @@
--- Distance at which local messages are shown
-local LocalMessageDistance = 50
-
--- Distance at which action messages are shown
-local ActionDistance = 50
-
--- Color for action messages
-local ActionColor = {200, 0, 255}
-
 -- Last player to send you a private message
 local ReplyTo = nil
+
+RegisterNetEvent('poodlechat:localMessage')
+RegisterNetEvent('poodlechat:action')
+RegisterNetEvent('poodlechat:whisperEcho')
+RegisterNetEvent('poodlechat:whisper')
+RegisterNetEvent('poodlechat:whisperError')
+RegisterNetEvent('poodlechat:setReplyTo')
 
 function AddLocalMessage(name, color, message)
 	TriggerEvent('chat:addMessage', {color = color, args = {'[Local] ' .. name, message}})
@@ -35,31 +33,26 @@ function IsInProximity(id, distance)
 	return GetDistanceBetweenCoords(myCoords, coords, true) < distance
 end
 
-RegisterNetEvent('poodlechat:localMessage')
 AddEventHandler('poodlechat:localMessage', function(id, name, color, message)
-	if IsInProximity(id, LocalMessageDistance) then
+	if IsInProximity(id, Config.LocalMessageDistance) then
 		AddLocalMessage(name, color, message)
 	end
 end)
 
-RegisterNetEvent('poodlechat:action')
 AddEventHandler('poodlechat:action', function(id, name, message)
-	if IsInProximity(id, ActionDistance) then
-		TriggerEvent('chat:addMessage', {color = ActionColor, args = {'^*' .. name .. ' ' .. message}})
+	if IsInProximity(id, Config.ActionDistance) then
+		TriggerEvent('chat:addMessage', {color = Config.ActionColor, args = {'^*' .. name .. ' ' .. message}})
 	end
 end)
 
-RegisterNetEvent('poodlechat:whisperEcho')
 AddEventHandler('poodlechat:whisperEcho', function(id, name, message)
-	TriggerEvent('chat:addMessage', {color = {204, 77, 106}, args = {'[Whisper@' .. name .. ']', message}})
+	TriggerEvent('chat:addMessage', {color = Config.WhisperEchoColor, args = {'[Whisper@' .. name .. ']', message}})
 end)
 
-RegisterNetEvent('poodlechat:whisper')
 AddEventHandler('poodlechat:whisper', function(id, name, message)
-	TriggerEvent('chat:addMessage', {color = {254, 127, 156}, args = {'[Whisper] ' .. name, message}})
+	TriggerEvent('chat:addMessage', {color = Config.WhisperColor, args = {'[Whisper] ' .. name, message}})
 end)
 
-RegisterNetEvent('poodlechat:whisperError')
 AddEventHandler('poodlechat:whisperError', function(id)
 	TriggerEvent('chat:addMessage', {color = {255, 0, 0}, args = {'Error', 'No user with ID or name ' .. id}})
 end)
@@ -73,15 +66,9 @@ function ReplyCommand(source, args, user)
 	end
 end
 
-RegisterCommand('reply', function(source, args, user)
-	ReplyCommand(source, args, user)
-end, false)
+RegisterCommand('reply', ReplyCommand, false)
+RegisterCommand('r', ReplyCommand, false)
 
-RegisterCommand('r', function(source, args, user)
-	ReplyCommand(source, args, user)
-end, false)
-
-RegisterNetEvent('poodlechat:setReplyTo')
 AddEventHandler('poodlechat:setReplyTo', function(id)
 	ReplyTo = tostring(id)
 end)
@@ -117,9 +104,5 @@ CreateThread(function()
 	})
 
 	-- Emoji suggestions
-	for i = 1, #emoji do
-		for k = 1, #emoji[i][1] do
-			TriggerEvent('chat:addSuggestion', emoji[i][1][k])
-		end
-	end
+	AddEmojiSuggestions()
 end)

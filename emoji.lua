@@ -1,4 +1,4 @@
-emoji = {
+Emoji = {
 	{
 		{":grinning:"},
 		"😀"
@@ -4280,10 +4280,18 @@ emoji = {
 }
 
 function Emojit(text)
-	for i = 1, #emoji do
-		for k = 1, #emoji[i][1] do
-			text = string.gsub(text, emoji[i][1][k], emoji[i][2])
+	for i = 1, #Emoji do
+		for k = 1, #Emoji[i][1] do
+			text = string.gsub(text, Emoji[i][1][k], Emoji[i][2])
 		end
 	end
 	return text
+end
+
+function AddEmojiSuggestions()
+	for i = 1, #Emoji do
+		for k = 1, #Emoji[i][1] do
+			TriggerEvent('chat:addSuggestion', Emoji[i][1][k])
+		end
+	end
 end

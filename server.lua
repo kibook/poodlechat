@@ -1,43 +1,9 @@
--- CONFIGURATION
-
--- URL of the Discord webhook. Leave as '' to disable sending messages to Discord
-local DISCORD_WEBHOOK = ''
-
--- The name to use on Discord for system messages
-local DISCORD_NAME = ''
-
--- The default avatar to use on Discord
-local DISCORD_AVATAR = ''
-
--- Discord bot token for getting player avatars from Discord
-local DISCORD_BOT = ''
-
--- Steam key for getting player avatars from Steam. Leave as '' to disable Steam integration.
-local STEAM_KEY = ''
-
--- Roles that can appear in front of player names, based on an ace.
--- Optionally, each role can be given a custom color.
---
--- Example:
---   {name = 'Admin', color = {255, 0, 0}, ace = 'chat.admin'}
---
--- To show this role for all members of group.admin:
---   add_ace group.admin chat.admin allow
-local Roles = {
-	--{name = 'Admin', ace = 'chat.admin'}, -- "Admin" role, default colors
-	--{name = 'Moderator', color = {0, 255, 0}, ace = 'chat.moderator'} -- "Moderator" role, custom color
-}
-
--- Default colors for local and global messages
-local DefaultLocalColor  = {  0, 153, 204}
-local DefaultGlobalColor = {212, 175,  55}
-
--- END OF CONFIGURATION
-
 -- API URLs
 local DISCORD_API = 'https://discordapp.com/api/users/'
 local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
+
+RegisterNetEvent('poodlechat:reply')
 
 function GetIDFromSource(Type, ID)
 	local IDs = GetPlayerIdentifiers(ID)
@@ -69,7 +35,7 @@ function SendToDiscord(name, message, color)
 			["description"] = message
 		}
 	}
-	PerformHttpRequest(DISCORD_WEBHOOK, function(err, text, headers) end, 'POST', json.encode({username = DISCORD_NAME, embeds = connect, avatar_url = DISCORD_IMAGE}), { ['Content-Type'] = 'application/json' })
+	PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = Config.DiscordName, embeds = connect, avatar_url = Config.DiscordAvatar}), { ['Content-Type'] = 'application/json' })
 end
 
 function GetNameWithRoleAndColor(source)
@@ -105,7 +71,7 @@ RegisterCommand('say', function(source, args, user)
 		local name, color = GetNameWithRoleAndColor(source)
 
 		if not color then
-			color = DefaultLocalColor
+			color = Config.DefaultLocalColor
 		end
 
 		TriggerClientEvent('poodlechat:localMessage', -1, source, name, color, message)
@@ -121,7 +87,7 @@ AddEventHandler('chatMessage', function(source, name, message)
 		local name, color = GetNameWithRoleAndColor(source)
 
 		if not color then
-			color = DefaultLocalColor
+			color = Config.DefaultLocalColor
 		end
 
 		message = Emojit(message)
@@ -146,14 +112,14 @@ end, false)
 
 function SendUserMessageToDiscord(source, name, message, avatar)
 	if avatar then
-		PerformHttpRequest(DISCORD_WEBHOOK, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, avatar_url = avatar, tts = false}), { ['Content-Type'] = 'application/json' })
+		PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, avatar_url = avatar, tts = false}), { ['Content-Type'] = 'application/json' })
 	else
-		PerformHttpRequest(DISCORD_WEBHOOK, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, tts = false}), { ['Content-Type'] = 'application/json' })
+		PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, tts = false}), { ['Content-Type'] = 'application/json' })
 	end
 end
 
 function SendMessageWithDiscordAvatar(source, name, message)
-	if DISCORD_BOT == '' then
+	if Config.DiscordBotToken == '' then
 		return false
 	end
 
@@ -164,7 +130,7 @@ function SendMessageWithDiscordAvatar(source, name, message)
 			local hash = json.decode(text)['avatar']
 			local avatar = DISCORD_CDN .. id .. '/' .. hash .. '.png'
 			SendUserMessageToDiscord(source, name, message, avatar)
-		end, 'GET', '', {['Authorization'] = 'Bot ' .. DISCORD_BOT})
+		end, 'GET', '', {['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
 
 		return true
 	end
@@ -173,14 +139,14 @@ function SendMessageWithDiscordAvatar(source, name, message)
 end
 
 function SendMessageWithSteamAvatar(source, name, message)
-	if STEAM_KEY == '' then
+	if Config.SteamKey == '' then
 		return false
 	end
 
 	local id = GetIDFromSource('steam', source)
 
 	if id then
-		PerformHttpRequest(STEAM_API .. STEAM_KEY .. '&steamids=' .. tonumber(id, 16), function(err, text, headers)
+		PerformHttpRequest(STEAM_API .. Config.SteamKey .. '&steamids=' .. tonumber(id, 16), function(err, text, headers)
 			local avatar = string.match(text, '"avatarfull":"(.-)","')
 			SendUserMessageToDiscord(source, name, message, avatar)
 		end)
@@ -201,7 +167,7 @@ function GlobalCommand(source, args, user)
 	end
 
 	if not color then
-		color = DefaultGlobalColor
+		color = Config.DefaultGlobalColor
 	end
 
 	message = Emojit(message)
@@ -209,7 +175,7 @@ function GlobalCommand(source, args, user)
 	TriggerClientEvent('chat:addMessage', -1, {color = color, args = {'[Global] ' .. name, message}})
 
 	-- Send global messages to Discord
-	if DISCORD_WEBHOOK ~= '' then
+	if Config.DiscordWebhook ~= '' then
 		-- Escape @everyone and @here to prevent mentions on Discord
 		if string.match(message, "@everyone") then
 			message = message:gsub("@everyone", "`@everyone`")
@@ -227,13 +193,8 @@ function GlobalCommand(source, args, user)
 	end
 end
 
-RegisterCommand('global', function(source, args, user)
-	GlobalCommand(source, args, user)
-end, false)
-
-RegisterCommand('g', function(source, args, user)
-	GlobalCommand(source, args, user)
-end, false)
+RegisterCommand('global', GlobalCommand, false)
+RegisterCommand('g', GlobalCommand, false)
 
 function Whisper(source, id, message)
 	local name, color = GetNameWithRoleAndColor(source)
@@ -288,15 +249,9 @@ function WhisperCommand(source, args, user)
 	Whisper(source, id, message)
 end
 
-RegisterCommand('whisper', function(source, args, user)
-	WhisperCommand(source, args, user)
-end, false)
+RegisterCommand('whisper', WhisperCommand, false)
+RegisterCommand('w', WhisperCommand, false)
 
-RegisterCommand('w', function(source, args, user)
-	WhisperCommand(source, args, user)
-end, false)
-
-RegisterNetEvent('poodlechat:reply')
 AddEventHandler('poodlechat:reply', function(target, message)
 	Whisper(source, target, message)
 end)
