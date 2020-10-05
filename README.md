@@ -16,7 +16,7 @@ Based on the following resources:
 - /whisper or /w to send a private message
 - Optionally sends events and global messages to a Discord channel via a webhook
 - Configurable roles based on aces
-- Configurable emoji shortcuts (:heart:, :smile:, and so on)
+- Configurable emoji shortcuts (`:heart:`, `:smile:`, and so on)
 
 # Configuration
 
