@@ -1,9 +1,37 @@
 -- API URLs
-local DISCORD_API = 'https://discordapp.com/api/users/'
-local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
+local DISCORD_API = 'https://discord.com/api'
+local DISCORD_CDN = 'https://cdn.discord.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
 
 RegisterNetEvent('poodlechat:reply')
+
+-- Queue to rate limit Discord requests
+local DiscordQueue = {}
+
+function EnqueueDiscordRequest(cb)
+	table.insert(DiscordQueue, 1, cb)
+end
+
+function ProcessDiscordQueue()
+	table.remove(DiscordQueue)()
+end
+
+-- Config setting utilities
+function IsSet(value)
+	return value and value ~= ''
+end
+
+function IsDiscordSendEnabled()
+	return IsSet(Config.DiscordWebhookId) and IsSet(Config.DiscordWebhookToken)
+end
+
+function IsDiscordReceiveEnabled()
+	return IsSet(Config.DiscordBotToken) and IsSet(Config.DiscordChannel)
+end
+
+function IsDiscordEnabled()
+	return IsDiscordSendEnabled() or IsDiscordReceiveEnabled()
+end
 
 function GetIDFromSource(Type, ID)
 	local IDs = GetPlayerIdentifiers(ID)
@@ -35,7 +63,33 @@ function SendToDiscord(name, message, color)
 			["description"] = message
 		}
 	}
-	PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = Config.DiscordName, embeds = connect, avatar_url = Config.DiscordAvatar}), { ['Content-Type'] = 'application/json' })
+
+	EnqueueDiscordRequest(function()
+		PerformHttpRequest(
+			DISCORD_API..'/webhooks/'..Config.DiscordWebhookId..'/'.. Config.DiscordWebhookToken,
+			function(err, text, headers) end,
+			'POST',
+			json.encode({
+				username = Config.DiscordName,
+				embeds = connect,
+				avatar_url = Config.DiscordAvatar
+			}),
+			{['Content-Type'] = 'application/json' })
+	end)
+	--PerformHttpRequest(
+	--	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages',
+	--	function(err, text, headers)
+	--	end,
+	--	'POST',
+	--	json.encode({
+	--		username = Config.DiscordName,
+	--		embeds = connect,
+	--		avatar_url = Config.DiscordAvatar
+	--	}),
+	--	{
+	--		['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+	--		['Content-Type'] = 'application/json'
+	--	})
 end
 
 function GetNameWithRoleAndColor(source)
@@ -111,26 +165,48 @@ RegisterCommand('me', function(source, args, user)
 end, false)
 
 function SendUserMessageToDiscord(source, name, message, avatar)
+	local data = {}
+	data.username = name .. ' [' .. source .. ']'
+	data.content = message
 	if avatar then
-		PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, avatar_url = avatar, tts = false}), { ['Content-Type'] = 'application/json' })
-	else
-		PerformHttpRequest(Config.DiscordWebhook, function(err, text, headers) end, 'POST', json.encode({username = name .. " [" .. source .. "]", content = message, tts = false}), { ['Content-Type'] = 'application/json' })
+		data.avatar_url = avatar
 	end
+	data.tts = false
+
+	EnqueueDiscordRequest(function()
+		PerformHttpRequest(
+			DISCORD_API..'/webhooks/'..Config.DiscordWebhookId..'/'..Config.DiscordWebhookToken,
+			function(err, text, headers) end,
+			'POST',
+			json.encode(data),
+			{['Content-Type'] = 'application/json'})
+	end)
+	--PerformHttpRequest(
+	--	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages',
+	--	function(err, text, headers) end,
+	--	'POST',
+	--	json.encode(data),
+	--	{
+	--		['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+	--		['Content-Type'] = 'application/json'
+	--	})
 end
 
 function SendMessageWithDiscordAvatar(source, name, message)
-	if Config.DiscordBotToken == '' then
+	if not IsSet(Config.DiscordBotToken) then
 		return false
 	end
 
 	local id = GetIDFromSource('discord', source)
 
 	if id then
-		PerformHttpRequest(DISCORD_API .. id, function(err, text, headers)
-			local hash = json.decode(text)['avatar']
-			local avatar = DISCORD_CDN .. id .. '/' .. hash .. '.png'
-			SendUserMessageToDiscord(source, name, message, avatar)
-		end, 'GET', '', {['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
+		EnqueueDiscordRequest(function()
+			PerformHttpRequest(DISCORD_API .. '/users/' .. id, function(err, text, headers)
+				local hash = json.decode(text)['avatar']
+				local avatar = DISCORD_CDN .. id .. '/' .. hash .. '.png'
+				SendUserMessageToDiscord(source, name, message, avatar)
+			end, 'GET', '', {['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
+		end)
 
 		return true
 	end
@@ -139,7 +215,7 @@ function SendMessageWithDiscordAvatar(source, name, message)
 end
 
 function SendMessageWithSteamAvatar(source, name, message)
-	if Config.SteamKey == '' then
+	if not IsSet(Config.SteamKey) then
 		return false
 	end
 
@@ -175,7 +251,7 @@ function GlobalCommand(source, args, user)
 	TriggerClientEvent('chat:addMessage', -1, {color = color, args = {'[Global] ' .. name, message}})
 
 	-- Send global messages to Discord
-	if Config.DiscordWebhook ~= '' then
+	if IsDiscordSendEnabled() then
 		-- Escape @everyone and @here to prevent mentions on Discord
 		if string.match(message, "@everyone") then
 			message = message:gsub("@everyone", "`@everyone`")
@@ -271,3 +347,99 @@ AddEventHandler('playerDropped', function(reason)
 	end
 	SendToDiscord("Server Logout", "**" .. GetPlayerName(source) .. "** has left the server. \n Reason: " .. reason, color)
 end)
+
+-- Display Discord messages in in-game chat
+local LastMessageId = nil
+
+-- Get the last message ID to start from
+function GetLastDiscordMessage()
+	PerformHttpRequest(
+	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages?limit=1',
+	function(err, text, headers)
+		local data = json.decode(text)
+		LastMessageId = data[#data].id
+	end,
+	'GET',
+	'',
+	{
+		['Authorization'] = 'Bot ' .. Config.DiscordBotToken
+	})
+end
+
+function DiscordMessage(message)
+	if message.id == Config.DiscordWebhookId then
+		return
+	end
+
+	if message.content == '' then
+		return
+	end
+
+	TriggerClientEvent('chat:addMessage', -1, {
+		color = Config.DiscordColor,
+		args = {'[Discord] ' .. message.name, message.content}
+	})
+end
+
+function GetDiscordMessages()
+	PerformHttpRequest(
+		DISCORD_API ..'/channels/'..Config.DiscordChannel..'/messages?after='..LastMessageId,
+		function(err, text, headers)
+			if err ~= 200 then
+				print(err, text)
+				return
+			end
+
+			local data = json.decode(text)
+
+			if #data > 0 then
+				-- Extract messages from response
+				local messages = {}
+				for _, message in ipairs(data) do
+					messages[message.id] = {
+						id = message.author.id,
+						name = message.author.username,
+						content = message.content
+					}
+				end
+
+				-- Sort by ID
+				local ids = {}
+				for id, message in pairs(messages) do
+					table.insert(ids, id)
+				end
+				table.sort(ids)
+
+				-- Send to in-game chat
+				for _, id in ipairs(ids) do
+					DiscordMessage(messages[id])
+				end
+
+				LastMessageId = ids[#ids]
+			end
+		end,
+		'GET',
+		'',
+		{['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
+end
+
+if IsDiscordEnabled() then
+	CreateThread(function()
+		if IsDiscordReceiveEnabled() then
+			while not LastMessageId do
+				Wait(Config.DiscordRateLimit)
+				GetLastDiscordMessage()
+			end
+		end
+
+		while true do
+			Wait(Config.DiscordRateLimit)
+
+			if IsDiscordReceiveEnabled() then
+				EnqueueDiscordRequest(GetDiscordMessages)
+			end
+
+			ProcessDiscordQueue()
+		end
+	end)
+end
