@@ -43,7 +43,7 @@ Config.DiscordBotToken = ''
 Config.DiscordChannel = ''
 
 -- Time in milliseconds between any two Discord requests.
-Config.DiscordRateLimit = 1000
+Config.DiscordRateLimit = 2000
 
 -- A Steam API key, used for getting avatars from Steam. Leave as '' to disable.
 Config.SteamKey = ''

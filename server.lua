@@ -13,7 +13,11 @@ function EnqueueDiscordRequest(cb)
 end
 
 function ProcessDiscordQueue()
-	table.remove(DiscordQueue)()
+	local cb = table.remove(DiscordQueue)
+
+	if cb then
+		cb()
+	end
 end
 
 -- Config setting utilities
@@ -386,7 +390,7 @@ function GetDiscordMessages()
 		DISCORD_API ..'/channels/'..Config.DiscordChannel..'/messages?after='..LastMessageId,
 		function(err, text, headers)
 			if err ~= 200 then
-				print(err, text)
+				print('[Discord] Failed to receive messages:', err, text, json.encode(headers))
 				return
 			end
 
@@ -435,11 +439,11 @@ if IsDiscordEnabled() then
 		while true do
 			Wait(Config.DiscordRateLimit)
 
+			ProcessDiscordQueue()
+
 			if IsDiscordReceiveEnabled() then
 				EnqueueDiscordRequest(GetDiscordMessages)
 			end
-
-			ProcessDiscordQueue()
 		end
 	end)
 end
