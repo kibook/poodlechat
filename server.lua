@@ -355,21 +355,6 @@ end)
 -- Display Discord messages in in-game chat
 local LastMessageId = nil
 
--- Get the last message ID to start from
-function GetLastDiscordMessage()
-	PerformHttpRequest(
-	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages?limit=1',
-	function(err, text, headers)
-		local data = json.decode(text)
-		LastMessageId = data[#data].id
-	end,
-	'GET',
-	'',
-	{
-		['Authorization'] = 'Bot ' .. Config.DiscordBotToken
-	})
-end
-
 function DiscordMessage(message)
 	if message.id == Config.DiscordWebhookId then
 		return
@@ -389,61 +374,80 @@ function GetDiscordMessages()
 	PerformHttpRequest(
 		DISCORD_API ..'/channels/'..Config.DiscordChannel..'/messages?after='..LastMessageId,
 		function(err, text, headers)
-			if err ~= 200 then
+			if err == 200 then
+				local data = json.decode(text)
+
+				if #data > 0 then
+					-- Extract messages from response
+					local messages = {}
+					for _, message in ipairs(data) do
+						messages[message.id] = {
+							id = message.author.id,
+							name = message.author.username,
+							content = message.content
+						}
+					end
+
+					-- Sort by ID
+					local ids = {}
+					for id, message in pairs(messages) do
+						table.insert(ids, id)
+					end
+					table.sort(ids)
+
+					-- Send to in-game chat
+					for _, id in ipairs(ids) do
+						DiscordMessage(messages[id])
+					end
+
+					LastMessageId = ids[#ids]
+				end
+			else
 				print('[Discord] Failed to receive messages:', err, text, json.encode(headers))
-				return
 			end
 
-			local data = json.decode(text)
-
-			if #data > 0 then
-				-- Extract messages from response
-				local messages = {}
-				for _, message in ipairs(data) do
-					messages[message.id] = {
-						id = message.author.id,
-						name = message.author.username,
-						content = message.content
-					}
-				end
-
-				-- Sort by ID
-				local ids = {}
-				for id, message in pairs(messages) do
-					table.insert(ids, id)
-				end
-				table.sort(ids)
-
-				-- Send to in-game chat
-				for _, id in ipairs(ids) do
-					DiscordMessage(messages[id])
-				end
-
-				LastMessageId = ids[#ids]
-			end
+			EnqueueDiscordRequest(GetDiscordMessages)
 		end,
 		'GET',
 		'',
 		{['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
 end
 
+-- Get the last message ID to start from
+function InitDiscordReceive()
+	PerformHttpRequest(
+		DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages?limit=1',
+		function(err, text, headers)
+			if err == 200 then
+				local data = json.decode(text)
+
+				LastMessageId = data[#data].id
+			else
+				print('[Discord] Failed to initialize:', err, text, json.encode(headers))
+			end
+
+			if LastMessageId then
+				EnqueueDiscordRequest(GetDiscordMessages)
+			else
+				EnqueueDiscordRequest(InitDiscordReceive)
+			end
+		end,
+		'GET',
+		'',
+		{
+			['Authorization'] = 'Bot ' .. Config.DiscordBotToken
+		})
+end
+
 if IsDiscordEnabled() then
 	CreateThread(function()
 		if IsDiscordReceiveEnabled() then
-			while not LastMessageId do
-				Wait(Config.DiscordRateLimit)
-				GetLastDiscordMessage()
-			end
+			EnqueueDiscordRequest(InitDiscordReceive)
 		end
 
 		while true do
-			Wait(Config.DiscordRateLimit)
-
 			ProcessDiscordQueue()
-
-			if IsDiscordReceiveEnabled() then
-				EnqueueDiscordRequest(GetDiscordMessages)
-			end
+			Wait(Config.DiscordRateLimit)
 		end
 	end)
 end
