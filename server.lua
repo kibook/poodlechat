@@ -1,6 +1,6 @@
 -- API URLs
 local DISCORD_API = 'https://discord.com/api'
-local DISCORD_CDN = 'https://cdn.discord.com/avatars/'
+local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
 
 RegisterNetEvent('poodlechat:reply')
