@@ -2,7 +2,6 @@ fx_version 'adamant'
 game 'common'
 
 description 'PoodleChat'
-version '2.0.2'
 
 shared_scripts {
 	'config.lua',
