@@ -37,6 +37,24 @@ function IsDiscordEnabled()
 	return IsDiscordSendEnabled() or IsDiscordReceiveEnabled()
 end
 
+local LogColors = {
+	['name'] = '\x1B[35m',
+	['default'] = '\x1B[0m',
+	['error'] = '\x1B[31m',
+	['success'] = '\x1B[32m',
+	['warning'] = '\x1B33m'
+}
+
+function Log(label, message)
+	local color = LogColors[label]
+
+	if not color then
+		color = LogColors.default
+	end
+
+	print(string.format('%s[PoodleChat] %s[%s]%s %s', LogColors.name, color, label, LogColors.default, message))
+end
+
 function GetIDFromSource(Type, ID)
 	local IDs = GetPlayerIdentifiers(ID)
 	for k, CurrentID in pairs(IDs) do
@@ -403,7 +421,7 @@ function GetDiscordMessages()
 					LastMessageId = ids[#ids]
 				end
 			else
-				print('[Discord] Failed to receive messages:', err, text, json.encode(headers))
+				Log('warning', string.format('Failed to receive messages: %d %s %s', err, text, json.encode(headers)))
 			end
 
 			EnqueueDiscordRequest(GetDiscordMessages)
@@ -422,8 +440,10 @@ function InitDiscordReceive()
 				local data = json.decode(text)
 
 				LastMessageId = data[#data].id
+
+				Log('success', 'Ready to receive Discord messages!')
 			else
-				print('[Discord] Failed to initialize:', err, text, json.encode(headers))
+				Log('error', string.format('Failed to initialize: %d %s %s', err, text, json.encode(headers)))
 			end
 
 			if LastMessageId then
