@@ -42,7 +42,7 @@ local LogColors = {
 	['default'] = '\x1B[0m',
 	['error'] = '\x1B[31m',
 	['success'] = '\x1B[32m',
-	['warning'] = '\x1B33m'
+	['warning'] = '\x1B[33m'
 }
 
 function Log(label, message)
