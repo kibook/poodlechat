@@ -5,6 +5,7 @@ description 'PoodleChat'
 
 shared_scripts {
 	'config.lua',
+	'common.lua',
 	'emoji.lua'
 }
 

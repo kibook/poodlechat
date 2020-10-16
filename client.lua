@@ -92,7 +92,7 @@ CreateThread(function()
 		{name = 'message', help = 'The message to send'}
 	})
 
-	if Config.DiscordReportChannel then
+	if IsDiscordReportEnabled() then
 		TriggerEvent('chat:addSuggestion', '/report', 'Report another player for abuse', {
 			{name = 'player', help = 'ID or name of the player to report'},
 			{name = 'reason', help = 'Reason you are reporting this player'}
