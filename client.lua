@@ -91,6 +91,14 @@ CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/r', 'Reply to the last whisper', {
 		{name = 'message', help = 'The message to send'}
 	})
+
+	if Config.DiscordReportChannel then
+		TriggerEvent('chat:addSuggestion', '/report', 'Report another player for abuse', {
+			{name = 'player', help = 'ID or name of the player to report'},
+			{name = 'reason', help = 'Reason you are reporting this player'}
+		})
+	end
+
 	TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
 		{name = "message", help = "The message to send"}
 	})

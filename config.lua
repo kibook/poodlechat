@@ -42,6 +42,18 @@ Config.DiscordBotToken = ''
 -- Discord channel ID to echo messages in-game from. Leave as '' to disable showing Discord messages in-game.
 Config.DiscordChannel = ''
 
+-- Discord channel to post player reports in.
+Config.DiscordReportChannel = ''
+
+-- Colour used for the report message embed on Discord.
+Config.DiscordReportColor = 0xfe7f9c
+
+-- Message sent to players upon submitting a report.
+Config.DiscordReportFeedbackMessage = 'Your report has been submitted.'
+
+-- Colour for the above feedback message.
+Config.DiscordReportFeedbackColor = {255, 165, 0}
+
 -- Time in milliseconds between any two Discord requests.
 Config.DiscordRateLimit = 2000
 

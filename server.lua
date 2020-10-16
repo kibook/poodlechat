@@ -33,8 +33,12 @@ function IsDiscordReceiveEnabled()
 	return IsSet(Config.DiscordBotToken) and IsSet(Config.DiscordChannel)
 end
 
+function IsDiscordReportEnabled()
+	return IsSet(Config.DiscordReportChannel) and IsSet(Config.DiscordBotToken)
+end
+
 function IsDiscordEnabled()
-	return IsDiscordSendEnabled() or IsDiscordReceiveEnabled()
+	return IsDiscordSendEnabled() or IsDiscordReceiveEnabled() or IsDiscordReportEnabled()
 end
 
 local LogColors = {
@@ -294,6 +298,26 @@ end
 RegisterCommand('global', GlobalCommand, false)
 RegisterCommand('g', GlobalCommand, false)
 
+function GetPlayerId(id)
+	-- First, search by ID
+	for _, playerId in ipairs(GetPlayers()) do
+		if playerId == id then
+			return playerId
+		end
+	end
+
+	-- Then, try by name
+	id = string.lower(id)
+
+	for _, playerId in ipairs(GetPlayers()) do
+		if string.lower(GetPlayerName(playerId)) == id then
+			return playerId
+		end
+	end
+
+	return nil
+end
+
 function Whisper(source, id, message)
 	local name, color = GetNameWithRoleAndColor(source)
 	local found = false
@@ -304,28 +328,9 @@ function Whisper(source, id, message)
 
 	message = Emojit(message)
 
-	-- First, search by ID
-	for _, playerId in ipairs(GetPlayers()) do
-		if playerId == id then
-			found = true
-			break
-		end
-	end
+	id = GetPlayerId(id)
 
-	-- Then, try by name
-	if not found then
-		id = string.lower(id)
-		for _, playerId in ipairs(GetPlayers()) do
-			local playerName = string.lower(GetPlayerName(playerId))
-			if playerName == id then
-				id = playerId
-				found = true
-				break
-			end
-		end
-	end
-
-	if found then
+	if id then
 		-- Echo the message to the sender's chat
 		TriggerClientEvent('poodlechat:whisperEcho', source, id, GetPlayerName(id), message)
 		-- Send the message to the recipient
@@ -357,6 +362,65 @@ end)
 RegisterCommand('clear', function(source, args, user)
 	TriggerClientEvent('chat:clear', source)
 end, false)
+
+function SendReportToDiscord(source, id, reason)
+	local reporterName = GetPlayerName(source)
+	local reporteeName = GetPlayerName(id)
+	local reporterLicense = GetIDFromSource('license', source)
+	local reporteeLicense = GetIDFromSource('license', id)
+
+	local message = 'Reporter: ' .. reporterName .. ' license:' .. reporterLicense .. '\nPlayer Reported: ' .. reporteeName .. ' license:' .. reporteeLicense .. '\nReason: ' .. reason
+
+	local data = {
+		embed = {
+			['color'] = Config.DiscordReportColor,
+			['description'] = message
+		},
+		tts = false
+	}
+
+	EnqueueDiscordRequest(function()
+		PerformHttpRequest(
+			DISCORD_API .. '/channels/' .. Config.DiscordReportChannel .. '/messages',
+			function(err, text, headers)
+				-- If there is an error, fallback to printing the report in the server console
+				if err ~= 200 then
+					Log('error', string.format('Failed to send report: %d %s %s\n%s', err, text, json.encode(headers), message))
+				end
+
+				TriggerClientEvent('chat:addMessage', source, {
+					color = Config.DiscordReportFeedbackColor,
+					args = {Config.DiscordReportFeedbackMessage}
+				})
+			end,
+			'POST',
+			json.encode(data),
+			{
+				['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+				['Content-Type'] = 'application/json'
+			})
+	end)
+end
+
+if IsDiscordReportEnabled() then
+	RegisterCommand('report', function(source, args, user)
+		if #args < 2 then
+			TriggerClientEvent('chat:addMessage', source, {
+				color = {255, 0, 0},
+				args = {'Error', 'You must specify a player and a reason'}
+			})
+			return
+		end
+
+		local id = GetPlayerId(table.remove(args, 1))
+
+		if id then
+			local reason = table.concat(args, ' ')
+
+			SendReportToDiscord(source, id, reason)
+		end
+	end, false)
+end
 
 AddEventHandler('playerConnecting', function() 
 	SendToDiscord("Server Login", "**" .. GetPlayerName(source) .. "** is connecting to the server.", 65280)
