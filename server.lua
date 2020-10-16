@@ -368,8 +368,20 @@ function SendReportToDiscord(source, id, reason)
 	local reporteeName = GetPlayerName(id)
 	local reporterLicense = GetIDFromSource('license', source)
 	local reporteeLicense = GetIDFromSource('license', id)
+	local reporterIp = GetPlayerEndpoint(source)
+	local reporteeIp = GetPlayerEndpoint(id)
 
-	local message = '**Reporter:** ' .. reporterName .. ' license:' .. reporterLicense .. '\n**Player Reported:** ' .. reporteeName .. ' license:' .. reporteeLicense .. '\n**Reason:** ' .. reason
+	local message = table.concat({
+		'**Reporter:** ' .. reporterName,
+		'**License:** ' .. reporterLicense,
+		'**IP:** ' .. reporterIp,
+		'',
+		'**Player Reported:** ' .. reporteeName,
+		'**License:** ' .. reporteeLicense,
+		'**IP:** ' .. reporteeIp,
+		'',
+		'**Reason:** ' .. reason
+	}, '\n')
 
 	local data = {
 		embed = {
