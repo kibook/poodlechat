@@ -412,12 +412,18 @@ if IsDiscordReportEnabled() then
 			return
 		end
 
-		local id = GetPlayerId(table.remove(args, 1))
+		local player = table.remove(args, 1)
+		local id = GetPlayerId(player)
 
 		if id then
 			local reason = table.concat(args, ' ')
 
 			SendReportToDiscord(source, id, reason)
+		else
+			TriggerClientEvent('chat:addMessage', source, {
+				color = {255, 0, 0},
+				args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
+			})
 		end
 	end, false)
 end
