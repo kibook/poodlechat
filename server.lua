@@ -369,7 +369,7 @@ function SendReportToDiscord(source, id, reason)
 	local reporterLicense = GetIDFromSource('license', source)
 	local reporteeLicense = GetIDFromSource('license', id)
 
-	local message = 'Reporter: ' .. reporterName .. ' license:' .. reporterLicense .. '\nPlayer Reported: ' .. reporteeName .. ' license:' .. reporteeLicense .. '\nReason: ' .. reason
+	local message = '**Reporter:** ' .. reporterName .. ' license:' .. reporterLicense .. '\n**Player Reported:** ' .. reporteeName .. ' license:' .. reporteeLicense .. '\n**Reason:** ' .. reason
 
 	local data = {
 		embed = {
