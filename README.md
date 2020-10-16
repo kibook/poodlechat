@@ -16,6 +16,7 @@ Based on the following resources:
 - /whisper or /w to send a private message
 - Optionally sends events and global messages to a Discord channel via a webhook
 - Optionally displays messages from a Discord channel in-game
+- Optionally send player reports to a Discord channel
 - Configurable roles based on aces
 - Configurable emoji shortcuts (`:heart:`, `:smile:`, and so on)
 
@@ -40,20 +41,24 @@ The following variables in [config.lua](config.lua) control general settings for
 
 The following variables in [config.lua](config.lua) control the Discord integration:
 
-| Variable                     | Description                                                                          |
-|------------------------------|--------------------------------------------------------------------------------------|
-| `Config.DiscordWebhookId`    | The webhook ID to use to send messages to a channel.                                 |
-| `Config.DiscordWebhookToken` | The webhook token to use to send messages to a channel.                              |
-| `Config.DiscordName`         | The name to use when sending event messages (joins/disconnects).                     |
-| `Config.DiscordAvatar`       | The avatar to use when sending event messages or if no avatar is found for a player. |
-| `Config.DiscordBotToken`     | A Discord bot token to use in order to get messages and player avatars.              |
-| `Config.DiscordChannel`      | A Discord channel to echo messages in-game from.                                     |
-| `Config.DiscordRateLimit`    | Time in milliseconds between any two Discord requests.                               |
-| `Config.SteamKey`            | A Steam key to use in order to retrieve avatars from Steam.                          |
+| Variable                              | Description                                                                          |
+|---------------------------------------|--------------------------------------------------------------------------------------|
+| `Config.DiscordWebhookId`             | The webhook ID to use to send messages to a channel.                                 |
+| `Config.DiscordWebhookToken`          | The webhook token to use to send messages to a channel.                              |
+| `Config.DiscordName`                  | The name to use when sending event messages (joins/disconnects).                     |
+| `Config.DiscordAvatar`                | The avatar to use when sending event messages or if no avatar is found for a player. |
+| `Config.DiscordBotToken`              | A Discord bot token to use in order to get messages and player avatars.              |
+| `Config.DiscordChannel`               | A Discord channel to echo messages in-game from.                                     |
+| `Config.DiscordReportChannel`         | A Discord channel to send player reports to.                                         |
+| `Config.DiscordReportColor`           | Colour used for the report message embed on Discord.                                 |
+| `Config.DiscordReportFeedbackMessage` | Message sent to players upoon submitting a report.                                   |
+| `Config.DiscordReportFeedbackColor`   | Colour for the above feedback message.                                               |
+| `Config.DiscordRateLimit`             | Time in milliseconds between any two Discord requests.                               |
+| `Config.SteamKey`                     | A Steam key to use in order to retrieve avatars from Steam.                          |
 
 All of these are optional, and can be left with their default value (empty string, `''`) to disable the Discord integration.
 
-For *sending* in-game messages to Discord, at minimum `Config.DiscordWebhookId` and `Config.DiscordWebhookToken` must be set. For *receiving* messages from Discord and displaying them in-game, at minimum `Config.DiscordBotToken` and `Config.DiscordChannel` must be set.
+For *sending* in-game messages to Discord, at minimum `Config.DiscordWebhookId` and `Config.DiscordWebhookToken` must be set. For *receiving* messages from Discord and displaying them in-game, at minimum `Config.DiscordBotToken` and `Config.DiscordChannel` must be set. For sending player reports to Discord, at minimum `Config.DiscordBotToken` and `Config.DiscordReportChannel` must be set.
 
 The ID and token of a Discord webhook can be found from the URL: `https://discord.com/api/webhooks/<id>/<token>`
 
