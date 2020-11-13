@@ -1,10 +1,11 @@
 # PoodleChat
 
-Chat extension used on the Poodle's Palace FiveM and RedM servers:
+Chat resource used on the Poodle's Palace FiveM and RedM servers:
 - [fivem.khzae.net](https://fivem.khzae.net)
 - [redm.khzae.net](https://redm.khzae.net)
 
 Based on the following resources:
+- CitizenFX chat
 - https://github.com/DevLanceGood/RPChat
 - https://github.com/Tazi0/Server-Logging
 - https://forum.cfx.re/t/release-emojis-for-chat-fivemojis-1-0/150713

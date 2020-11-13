@@ -1,3 +1,79 @@
+RegisterServerEvent('chat:init')
+RegisterServerEvent('chat:addTemplate')
+RegisterServerEvent('chat:addMessage')
+RegisterServerEvent('chat:addSuggestion')
+RegisterServerEvent('chat:removeSuggestion')
+RegisterServerEvent('_chat:messageEntered')
+RegisterServerEvent('chat:clear')
+RegisterServerEvent('__cfx_internal:commandFallback')
+
+AddEventHandler('_chat:messageEntered', function(author, color, message, channel)
+    if not message or not author then
+        return
+    end
+
+    TriggerEvent('chatMessage', source, author, message, channel)
+
+    if not WasEventCanceled() then
+        TriggerClientEvent('chatMessage', -1, author,  { 255, 255, 255 }, message)
+    end
+
+    print(author .. '^7: ' .. message .. '^7')
+end)
+
+AddEventHandler('__cfx_internal:commandFallback', function(command)
+    local name = GetPlayerName(source)
+
+    TriggerEvent('chatMessage', source, name, '/' .. command)
+
+    if not WasEventCanceled() then
+        TriggerClientEvent('chatMessage', -1, name, { 255, 255, 255 }, '/' .. command) 
+    end
+
+    CancelEvent()
+end)
+
+-- player join messages
+AddEventHandler('chat:init', function()
+    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) .. ' joined.')
+end)
+
+AddEventHandler('playerDropped', function(reason)
+    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) ..' left (' .. reason .. ')')
+end)
+
+-- command suggestions for clients
+local function refreshCommands(player)
+    if GetRegisteredCommands then
+        local registeredCommands = GetRegisteredCommands()
+
+        local suggestions = {}
+
+        for _, command in ipairs(registeredCommands) do
+            if IsPlayerAceAllowed(player, ('command.%s'):format(command.name)) then
+                table.insert(suggestions, {
+                    name = '/' .. command.name,
+                    help = ''
+                })
+            end
+        end
+
+        TriggerClientEvent('chat:addSuggestions', player, suggestions)
+    end
+end
+
+AddEventHandler('chat:init', function()
+    refreshCommands(source)
+end)
+
+AddEventHandler('onServerResourceStart', function(resName)
+    Wait(500)
+
+    for _, player in ipairs(GetPlayers()) do
+        refreshCommands(player)
+    end
+end)
+
 -- API URLs
 local DISCORD_API = 'https://discord.com/api'
 local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
@@ -115,59 +191,21 @@ function GetNameWithRoleAndColor(source)
 	end
 end
 
--- Override default /say command
-RegisterCommand('say', function(source, args, user)
-	local message = table.concat(args, " ")
-
-	if message == "" then
+function LocalMessage(source, message)
+	if message == '' then
 		return
 	end
 
 	message = Emojit(message)
 
-	-- If source is a player, send a local message
-	if source > 0 then
-		local name, color = GetNameWithRoleAndColor(source)
+	local name, color = GetNameWithRoleAndColor(source)
 
-		if not color then
-			color = Config.DefaultLocalColor
-		end
-
-		TriggerClientEvent('poodlechat:localMessage', -1, source, name, color, message)
-	-- If source is console, send to all players
-	else
-		TriggerClientEvent('chat:addMessage', -1, {color = {255, 255, 255}, args = {'console', message}})
-	end
-end, false)
-
--- Send local messages by default
-AddEventHandler('chatMessage', function(source, name, message)
-	if string.sub(message, 1, string.len("/")) ~= "/" then
-		local name, color = GetNameWithRoleAndColor(source)
-
-		if not color then
-			color = Config.DefaultLocalColor
-		end
-
-		message = Emojit(message)
-
-		TriggerClientEvent("poodlechat:localMessage", -1, source, name, color, message)
-	end
-	CancelEvent()
-end)
-
-RegisterCommand('me', function(source, args, user)
-	local name = GetPlayerName(source)
-	local message = table.concat(args, " ")
-
-	if message == "" then
-		return
+	if not color then
+		color = Config.DefaultLocalColor
 	end
 
-	message = Emojit(message)
-
-	TriggerClientEvent("poodlechat:action", -1, source, name, message)
-end, false)
+	TriggerClientEvent('poodlechat:localMessage', -1, source, name, color, message)
+end
 
 function SendUserMessageToDiscord(source, name, message, avatar)
 	local data = {}
@@ -238,20 +276,18 @@ function SendMessageWithSteamAvatar(source, name, message)
 	return false
 end
 
-
-function GlobalCommand(source, args, user)
-	local name, color = GetNameWithRoleAndColor(source)
-	local message = table.concat(args, ' ')
-
+function GlobalMessage(source, message)
 	if message == '' then
 		return
 	end
 
+	message = Emojit(message)
+
+	local name, color = GetNameWithRoleAndColor(source)
+
 	if not color then
 		color = Config.DefaultGlobalColor
 	end
-
-	message = Emojit(message)
 
 	TriggerClientEvent('chat:addMessage', -1, {color = color, args = {'[Global] ' .. name, message}})
 
@@ -274,8 +310,53 @@ function GlobalCommand(source, args, user)
 	end
 end
 
+function LocalCommand(source, args, raw)
+	local message = table.concat(args, ' ')
+	LocalMessage(source, message)
+end
+
+function GlobalCommand(source, args, user)
+	local message = table.concat(args, ' ')
+	GlobalMessage(source, message)
+end
+
 RegisterCommand('global', GlobalCommand, false)
 RegisterCommand('g', GlobalCommand, false)
+
+RegisterCommand('say', function(source, args, raw)
+	-- If source is a player, send a local message
+	if source and source > 0 then
+		LocalCommand(source, args, raw)
+	-- If source is console, send to all players
+	else
+		TriggerClientEvent('chat:addMessage', -1, {color = {255, 255, 255}, args = {'console', message}})
+	end
+end, true)
+
+-- Send messages to current channel by default
+AddEventHandler('chatMessage', function(source, name, message, channel)
+	if string.sub(message, 1, string.len("/")) ~= "/" then
+		if channel == 'Global' then
+			GlobalMessage(source, message)
+		else
+			LocalMessage(source, message)
+		end
+	end
+	CancelEvent()
+end)
+
+RegisterCommand('me', function(source, args, user)
+	local name = GetPlayerName(source)
+	local message = table.concat(args, " ")
+
+	if message == "" then
+		return
+	end
+
+	message = Emojit(message)
+
+	TriggerClientEvent("poodlechat:action", -1, source, name, message)
+end, false)
 
 function GetPlayerId(id)
 	-- First, search by ID
