@@ -273,11 +273,11 @@ Emoji = {
 		"👋",
 
 	}, {
-		{":thumbsup:", ":+1:", ":thumbup:"},
+		{":thumbsup:", ":thumbup:"},
 		"👍",
 
 	}, {
-		{":thumbsdown:", ":-1:", ":thumbdown:"},
+		{":thumbsdown:", ":thumbdown:"},
 		"👎",
 
 	}, {
