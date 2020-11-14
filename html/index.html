@@ -33,7 +33,11 @@
       </div>
       <div class="chat-input" v-show="showInput">
         <div>
-					<div class="channel"><span id="channel-name"></span> <span class="cycle-instructions">(Press Tab to cycle)</span></div>
+					<div class="channels">
+						<div class="channel active-channel" data-channel-name="Local" id="channel-local">Local</div>
+						<div class="channel" data-channel-name="Global" id="channel-global">Global</div>
+						<div class="cycle-instructions">(Press Tab to cycle)</div>
+					</div>
 					<div class="prefix">➤</div>
           <textarea v-model="message"
                     ref="input"

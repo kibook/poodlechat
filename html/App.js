@@ -253,14 +253,37 @@ window.APP = {
 			clearInterval(this.focusTimer);
 			this.resetShowWindowTimer();
 		},
-		setChannel({channel, color}) {
-			const channelName = document.getElementById('channel-name');
-			channelName.innerHTML = '[' + channel + ']';
-			channelName.style.color = color;
+		setChannel({channelId}) {
+			document.querySelectorAll('.channel').forEach(e => {
+				if (e.id == channelId) {
+					e.className = 'channel active-channel';
+				} else {
+					e.className = 'channel'
+				}
+			});
 		},
 	},
 };
 
+function colorToRgb(color) {
+	return `rgb(${color[0]},${color[1]},${color[2]})`
+}
+
 window.addEventListener('load', event => {
-	post('https://' + GetParentResourceName() + '/onLoad', '{}');
+	fetch('https://' + GetParentResourceName() + '/onLoad').then(resp => resp.json()).then(resp => {
+		document.getElementById('channel-local').style.color = colorToRgb(resp.localColor);
+		document.getElementById('channel-global').style.color = colorToRgb(resp.globalColor);
+	});
+
+	document.querySelectorAll('.channel').forEach(e => e.addEventListener('click', function(event) {
+		fetch('https://' + GetParentResourceName() + '/setChannel', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				channelId: this.id
+			})
+		});
+	}));
 });

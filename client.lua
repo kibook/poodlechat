@@ -272,20 +272,22 @@ end)
 function SetChannel(name)
 	Channel = name
 
-	local color
-
-	if name == 'Local' then
-		color = Config.DefaultLocalColor
-	elseif name == 'Global' then
-		color = Config.DefaultGlobalColor
-	end
-
 	SendNUIMessage({
 		type = 'setChannel',
-		channel = name,
-		color = 'rgba(' .. color[1] .. ', ' .. color[2] .. ', ' .. color[3] .. ', 1.0)'
+		channelId = name == 'Local' and 'channel-local' or 'channel-global'
 	})
 end
+
+RegisterNUICallback('setChannel', function(data, cb)
+	local name
+	if data.channelId == 'channel-local' then
+		name = 'Local'
+	elseif data.channelId == 'channel-global' then
+		name = 'Global'
+	end
+	SetChannel(name)
+	cb({})
+end)
 
 function CycleChannel()
 	Channel = Channel == 'Local' and 'Global' or 'Local'
@@ -294,7 +296,10 @@ end
 
 RegisterNUICallback('onLoad', function(data, cb)
 	SetChannel(Channel)
-	cb({})
+	cb({
+		localColor = Config.DefaultLocalColor,
+		globalColor = Config.DefaultGlobalColor
+	})
 end)
 
 RegisterNUICallback('cycleChannel', function(data, cb)
@@ -367,7 +372,7 @@ CreateThread(function()
 
 		if chatInputActivating then
 			if not IsControlPressed(0, isRDR and `INPUT_MP_TEXT_CHAT_ALL` or 245) then
-				SetNuiFocus(true)
+				SetNuiFocus(true, true)
 
 				chatInputActivating = false
 			end
