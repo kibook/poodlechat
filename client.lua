@@ -5,8 +5,11 @@ local chatInputActivating = false
 local chatHidden = true
 local chatLoaded = false
 
--- Active channel
+-- Default channel
 local Channel = 'Local'
+
+-- Whether to hide the chat
+local HideChat = false
 
 RegisterNetEvent('chatMessage')
 RegisterNetEvent('chat:addTemplate')
@@ -299,6 +302,10 @@ RegisterNUICallback('cycleChannel', function(data, cb)
 	cb({})
 end)
 
+RegisterCommand('togglechat', function(source, args, raw)
+	HideChat = not HideChat
+end)
+
 CreateThread(function()
 	-- Command documentation
 	TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window', {})
@@ -328,6 +335,7 @@ CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
 		{name = "message", help = "The message to send"}
 	})
+	TriggerEvent('chat:addSuggestion', '/togglechat', 'Toggle the chat on/off', {})
 	TriggerEvent('chat:addSuggestion', '/whisper', 'Send a private message', {
 		{name = "player", help = "ID or name of the player to message"},
 		{name = "message", help = "The message to send"}
@@ -368,7 +376,7 @@ CreateThread(function()
 		if chatLoaded then
 			local shouldBeHidden = false
 
-			if IsScreenFadedOut() or IsPauseMenuActive() then
+			if IsScreenFadedOut() or IsPauseMenuActive() or HideChat then
 				shouldBeHidden = true
 			end
 

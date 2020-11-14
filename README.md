@@ -124,6 +124,12 @@ Sends a message to the last player that sent you a private message (`/whisper`) 
 Sends a message to nearby players. The default text chat is also overridden to be proximity-based.
 
 ```
+/togglechat
+```
+
+Toggles the chat window on/off.
+
+```
 /whisper [player] [message]
 /w [player] [message]
 ```
