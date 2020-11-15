@@ -1,3 +1,5 @@
+![PoodleChat](screenshot.png)
+
 # PoodleChat
 
 Chat resource used on the Poodle's Palace FiveM and RedM servers:
