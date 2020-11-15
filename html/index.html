@@ -17,7 +17,7 @@
 
   <!-- App Template -->
   <script type="text/x-template" id="app_template">
-    <div id="app">
+    <div id="app" @keyup.esc="hideInput">
       <div class="chat-window" :style="this.style" :class="{ 'fadeOut animated': !showWindow, 'hidden': shouldHide }">
         <div class="chat-messages" ref="messages">
           <message v-for="msg in messages"
@@ -34,9 +34,10 @@
       <div class="chat-input" v-show="showInput">
         <div>
 					<div class="channels">
-						<div class="channel active-channel" data-channel-name="Local" id="channel-local">Local</div>
-						<div class="channel" data-channel-name="Global" id="channel-global">Global</div>
-						<div class="cycle-instructions">(Press Tab to cycle)</div>
+						<div class="channel tab active-tab" data-channel-name="Local" id="channel-local">Local</div>
+						<div class="channel tab" data-channel-name="Global" id="channel-global">Global</div>
+						<div class="tab" id="cycle-instructions">(Press Tab to cycle)</div>
+						<div class="tab" id="emoji-toggle">😀</div>
 					</div>
 					<div class="prefix">➤</div>
           <textarea v-model="message"
@@ -44,7 +45,6 @@
                     type="text"
                     autofocus
                     spellcheck="false"
-                    @keyup.esc="hideInput"
                     @keyup="keyUp"
                     @keydown="keyDown"
                     @keypress.enter.prevent="send">
@@ -52,6 +52,10 @@
         </div>
         <suggestions :message="message" :suggestions="suggestions">
         </suggestions>
+				<div id="emoji-window">
+					<input id="emoji-search" type="text" placeholder="Search..." tabindex="-1">
+					<div id="emoji-list" class="no-focus" tabindex="-1"></div>
+				</div>
       </div>
     </div>
   </script>

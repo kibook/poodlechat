@@ -298,7 +298,8 @@ RegisterNUICallback('onLoad', function(data, cb)
 	SetChannel(Channel)
 	cb({
 		localColor = Config.DefaultLocalColor,
-		globalColor = Config.DefaultGlobalColor
+		globalColor = Config.DefaultGlobalColor,
+		emoji = json.encode(Emoji)
 	})
 end)
 

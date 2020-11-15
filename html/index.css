@@ -80,9 +80,10 @@ em {
 .channels {
 	background-color: rgba(44, 62, 80, 0.8);
 	width: fit-content;
+	user-select: none;
 }
 
-.channel, .cycle-instructions {
+.tab {
 	display: inline-block;
 	padding: 0.25vh 0.25vw;
 }
@@ -91,13 +92,40 @@ em {
 	filter: brightness(50%);
 }
 
-.channel.active-channel {
+.active-tab {
 	background-color: rgba(44, 62, 80, 1.0);
 	filter: brightness(100%);
 }
 
-.cycle-instructions {
+#cycle-instructions {
 	font-size: 1.0vh;
+}
+
+#emoji-toggle {
+	font-size: 1.5vh;
+}
+
+#emoji-window {
+	display: none;
+	flex-direction: column;
+	width: 100%;
+	height: 25vh;
+	background-color: rgba(44, 62, 80, 0.5);
+	user-select: none;
+}
+
+#emoji-list {
+	display: flex;
+	flex-wrap: wrap;
+	overflow-y: scroll;
+}
+
+#emoji-search {
+	background-color: rgba(44, 62, 80, 0.5);
+	font-size: inherit;
+	color: white;
+	border: none;
+	padding: 0.25vh 0.25vw;
 }
 
 textarea {
@@ -114,6 +142,7 @@ textarea {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	resize: none;
+	user-select: auto;
 }
 
 textarea:focus, input:focus {

@@ -19,7 +19,7 @@ window.APP = {
 		};
 	},
 	destroyed() {
-		clearInterval(this.focusTimer);
+		//clearInterval(this.focusTimer);
 		window.removeEventListener('message', this.listener);
 	},
 	mounted() {
@@ -60,13 +60,14 @@ window.APP = {
 			if (this.showWindowTimer) {
 				clearTimeout(this.showWindowTimer);
 			}
-			this.focusTimer = setInterval(() => {
+			setTimeout(() => this.$refs.input.focus(), 100);
+			/*this.focusTimer = setInterval(() => {
 				if (this.$refs.input) {
 					this.$refs.input.focus();
 				} else {
 					clearInterval(this.focusTimer);
 				}
-			}, 100);
+			}, 100);*/
 		},
 		ON_MESSAGE({ message }) {
 			this.messages.push(message);
@@ -212,6 +213,7 @@ window.APP = {
 				var buf = document.getElementsByClassName('chat-messages')[0];
 				buf.scrollTop = buf.scrollTop + 100;
 			} else if (e.which == 9) {
+				e.preventDefault();
 				post('https://' + GetParentResourceName() + '/cycleChannel', '{}');
 			}
 		},
@@ -250,15 +252,15 @@ window.APP = {
 			}
 			this.message = '';
 			this.showInput = false;
-			clearInterval(this.focusTimer);
+			//clearInterval(this.focusTimer);
 			this.resetShowWindowTimer();
 		},
 		setChannel({channelId}) {
 			document.querySelectorAll('.channel').forEach(e => {
 				if (e.id == channelId) {
-					e.className = 'channel active-channel';
+					e.className = 'channel tab active-tab';
 				} else {
-					e.className = 'channel'
+					e.className = 'channel tab'
 				}
 			});
 		},
@@ -269,10 +271,52 @@ function colorToRgb(color) {
 	return `rgb(${color[0]},${color[1]},${color[2]})`
 }
 
+var emojis = [];
+
+function populateEmojiList(filter) {
+	var emojiList = document.getElementById('emoji-list');
+
+	emojiList.innerHTML = '';
+
+	emojis.forEach(emoji => {
+		var addToList = false;
+
+		for (var i = 0; i < emoji[0].length; ++i) {
+			if (!filter || filter == '' || emoji[0][i].toLowerCase().includes(filter.toLowerCase())) {
+				addToList = true;
+				break;
+			}
+		}
+
+		if (addToList) {
+			var div = document.createElement('div');
+			div.className = 'emoji';
+			div.innerHTML = emoji[1];
+			div.addEventListener('click', function(event) {
+				var input = document.querySelector('textarea');
+				input.value = input.value + this.innerHTML;
+				var evt = new Event('input');
+				input.dispatchEvent(evt);
+				input.focus();
+			});
+			div.addEventListener('mouseover', function(event) {
+				document.getElementById('emoji-search').placeholder = emoji[0].join(', ');
+			});
+			div.addEventListener('mouseout', function(event) {
+				document.getElementById('emoji-search').placeholder = 'Search...';
+			});
+			emojiList.appendChild(div);
+		}
+	});
+}
+
 window.addEventListener('load', event => {
 	fetch('https://' + GetParentResourceName() + '/onLoad').then(resp => resp.json()).then(resp => {
 		document.getElementById('channel-local').style.color = colorToRgb(resp.localColor);
 		document.getElementById('channel-global').style.color = colorToRgb(resp.globalColor);
+
+		emojis = JSON.parse(resp.emoji);
+		populateEmojiList();
 	});
 
 	document.querySelectorAll('.channel').forEach(e => e.addEventListener('click', function(event) {
@@ -285,5 +329,36 @@ window.addEventListener('load', event => {
 				channelId: this.id
 			})
 		});
+	}));
+
+	document.querySelectorAll('.tab').forEach(e => e.addEventListener('click', function(event) {
+		document.querySelector('textarea').focus();
+	}));
+
+	document.getElementById('emoji-toggle').addEventListener('click', function(event) {
+		var emojiWindow = document.getElementById('emoji-window');
+
+		if (emojiWindow.style.display == 'flex') {
+			emojiWindow.style.display = 'none';
+			this.className = 'tab';
+		} else {
+			emojiWindow.style.display = 'flex';
+			this.className = 'tab active-tab';
+		}
+		document.querySelector('textarea').focus();
+	});
+
+	document.getElementById('emoji-search').addEventListener('input', function(event) {
+		populateEmojiList(this.value);
+	});
+
+	document.querySelectorAll('.no-focus').forEach(e => e.addEventListener('focus', event => {
+		event.preventDefault();
+
+		if (event.relatedTarget) {
+			event.relatedTarget.focus();
+		} else {
+			event.currentTarget.blur();
+		}
 	}));
 });
