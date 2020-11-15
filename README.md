@@ -1,6 +1,6 @@
-![PoodleChat](screenshot.png)
-
 # PoodleChat
+
+![PoodleChat screenshot](screenshot.png)
 
 Chat resource used on the Poodle's Palace FiveM and RedM servers:
 - [fivem.khzae.net](https://fivem.khzae.net)
