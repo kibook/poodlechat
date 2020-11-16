@@ -197,12 +197,46 @@ end)
 -- Last player to send you a private message
 local ReplyTo = nil
 
+local Permissions = {
+	-- Whether this player has access to the Staff channel
+	canAccessStaffChannel = false
+}
+
 RegisterNetEvent('poodlechat:localMessage')
 RegisterNetEvent('poodlechat:action')
 RegisterNetEvent('poodlechat:whisperEcho')
 RegisterNetEvent('poodlechat:whisper')
 RegisterNetEvent('poodlechat:whisperError')
 RegisterNetEvent('poodlechat:setReplyTo')
+RegisterNetEvent('poodlechat:staffMessage')
+RegisterNetEvent('poodlechat:setPermissions')
+
+function GlobalCommand(source, args, user)
+	TriggerServerEvent('poodlechat:globalMessage', table.concat(args, ' '))
+end
+
+RegisterCommand('global', GlobalCommand, false)
+RegisterCommand('g', GlobalCommand, false)
+
+RegisterCommand('me', function(source, args, raw)
+	TriggerServerEvent('poodlechat:actionMessage', table.concat(args, ' '))
+end, false)
+
+function WhisperCommand(source, args, user)
+	local id = args[1]
+
+	table.remove(args, 1)
+	local message = table.concat(args, ' ')
+
+	TriggerServerEvent('poodlechat:whisperMessage', id, message)
+end
+
+RegisterCommand('whisper', WhisperCommand, false)
+RegisterCommand('w', WhisperCommand, false)
+
+RegisterCommand('clear', function(source, args, user)
+	TriggerEvent('chat:clear', source)
+end, false)
 
 function AddLocalMessage(name, color, message)
 	TriggerEvent('chat:addMessage', {color = color, args = {'[Local] ' .. name, message}})
@@ -272,9 +306,19 @@ end)
 function SetChannel(name)
 	Channel = name
 
+	local channelId
+
+	if name == 'Local' then
+		channelId = 'channel-local'
+	elseif name == 'Global' then
+		channelId = 'channel-global'
+	elseif name == 'Staff' then
+		channelId = 'channel-staff'
+	end
+
 	SendNUIMessage({
 		type = 'setChannel',
-		channelId = name == 'Local' and 'channel-local' or 'channel-global'
+		channelId = channelId
 	})
 end
 
@@ -284,13 +328,30 @@ RegisterNUICallback('setChannel', function(data, cb)
 		name = 'Local'
 	elseif data.channelId == 'channel-global' then
 		name = 'Global'
+	elseif data.channelId == 'channel-staff' then
+		name = 'Staff'
 	end
 	SetChannel(name)
 	cb({})
 end)
 
 function CycleChannel()
-	Channel = Channel == 'Local' and 'Global' or 'Local'
+	if Permissions.canAccessStaffChannel then
+		if Channel == 'Local' then
+			Channel = 'Global'
+		elseif Channel == 'Global' then
+			Channel = 'Staff'
+		else
+			Channel = 'Local'
+		end
+	else
+		if Channel == 'Local' then
+			Channel = 'Global'
+		else
+			Channel = 'Local'
+		end
+	end
+
 	SetChannel(Channel)
 end
 
@@ -299,6 +360,7 @@ RegisterNUICallback('onLoad', function(data, cb)
 	cb({
 		localColor = Config.DefaultLocalColor,
 		globalColor = Config.DefaultGlobalColor,
+		staffColor = Config.DefaultStaffColor,
 		emoji = json.encode(Emoji)
 	})
 end)
@@ -312,7 +374,28 @@ RegisterCommand('togglechat', function(source, args, raw)
 	HideChat = not HideChat
 end)
 
+RegisterCommand('staff', function(source, args, raw)
+	local message = table.concat(args, ' ')
+
+	if message == '' then
+		return
+	end
+
+	TriggerServerEvent('poodlechat:staffMessage', message)
+end)
+
+AddEventHandler('poodlechat:setPermissions', function(permissions)
+	Permissions = permissions
+
+	SendNUIMessage({
+		type = 'setPermissions',
+		permissions = json.encode(permissions)
+	})
+end)
+
 CreateThread(function()
+	TriggerServerEvent('poodlechat:getPermissions')
+
 	-- Command documentation
 	TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window', {})
 	TriggerEvent('chat:addSuggestion', '/global', 'Send a message to all players', {

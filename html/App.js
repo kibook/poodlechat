@@ -264,6 +264,15 @@ window.APP = {
 				}
 			});
 		},
+		setPermissions({permissions}) {
+			var perms = JSON.parse(permissions);
+
+			if (perms.canAccessStaffChannel) {
+				document.getElementById('channel-staff').style.display = 'inline-block';
+			} else {
+				document.getElementById('channel-staff').style.display = 'none';
+			}
+		},
 	},
 };
 
@@ -314,6 +323,7 @@ window.addEventListener('load', event => {
 	fetch('https://' + GetParentResourceName() + '/onLoad').then(resp => resp.json()).then(resp => {
 		document.getElementById('channel-local').style.color = colorToRgb(resp.localColor);
 		document.getElementById('channel-global').style.color = colorToRgb(resp.globalColor);
+		document.getElementById('channel-staff').style.color = colorToRgb(resp.staffColor);
 
 		emojis = JSON.parse(resp.emoji);
 		populateEmojiList();

@@ -92,6 +92,10 @@ em {
 	filter: brightness(50%);
 }
 
+#channel-staff {
+	display: none;
+}
+
 .active-tab {
 	background-color: rgba(44, 62, 80, 1.0);
 	filter: brightness(100%);

@@ -80,6 +80,11 @@ local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
 
 RegisterNetEvent('poodlechat:reply')
+RegisterNetEvent('poodlechat:staffMessage')
+RegisterNetEvent('poodlechat:globalMessage')
+RegisterNetEvent('poodlechat:actionMessage')
+RegisterNetEvent('poodlechat:whisperMessage')
+RegisterNetEvent('poodlechat:getPermissions')
 
 -- Queue to rate limit Discord requests
 local DiscordQueue = {}
@@ -310,18 +315,14 @@ function GlobalMessage(source, message)
 	end
 end
 
+AddEventHandler('poodlechat:globalMessage', function(message)
+	GlobalMessage(source, message)
+end)
+
 function LocalCommand(source, args, raw)
 	local message = table.concat(args, ' ')
 	LocalMessage(source, message)
 end
-
-function GlobalCommand(source, args, user)
-	local message = table.concat(args, ' ')
-	GlobalMessage(source, message)
-end
-
-RegisterCommand('global', GlobalCommand, false)
-RegisterCommand('g', GlobalCommand, false)
 
 RegisterCommand('say', function(source, args, raw)
 	-- If source is a player, send a local message
@@ -338,18 +339,19 @@ AddEventHandler('chatMessage', function(source, name, message, channel)
 	if string.sub(message, 1, string.len("/")) ~= "/" then
 		if channel == 'Global' then
 			GlobalMessage(source, message)
-		else
+		elseif channel == 'Local' then
 			LocalMessage(source, message)
+		elseif channel == 'Staff' then
+			StaffMessage(source, message)
 		end
 	end
 	CancelEvent()
 end)
 
-RegisterCommand('me', function(source, args, user)
+AddEventHandler('poodlechat:actionMessage', function(message)
 	local name = GetPlayerName(source)
-	local message = table.concat(args, " ")
 
-	if message == "" then
+	if message == '' then
 		return
 	end
 
@@ -378,11 +380,10 @@ function GetPlayerId(id)
 	return nil
 end
 
-function Whisper(source, id, message)
+AddEventHandler('poodlechat:whisperMessage', function(id, message)
 	local name, color = GetNameWithRoleAndColor(source)
-	local found = false
 
-	if message == "" then
+	if message == '' then
 		return
 	end
 
@@ -401,27 +402,56 @@ function Whisper(source, id, message)
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
 	end
-end
-
-function WhisperCommand(source, args, user)
-	local id = args[1]
-
-	table.remove(args, 1)
-	local message = table.concat(args, " ")
-
-	Whisper(source, id, message)
-end
-
-RegisterCommand('whisper', WhisperCommand, false)
-RegisterCommand('w', WhisperCommand, false)
+end)
 
 AddEventHandler('poodlechat:reply', function(target, message)
 	Whisper(source, target, message)
 end)
 
-RegisterCommand('clear', function(source, args, user)
-	TriggerClientEvent('chat:clear', source)
-end, false)
+function StaffMessage(source, message)
+	if not IsPlayerAceAllowed(source, 'chat.staffChannel') then
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'You do not have access to the Staff channel.'}
+		})
+		return
+	end
+
+	local name, color = GetNameWithRoleAndColor(source)
+
+	if not color then
+		color = Config.DefaultStaffColor
+	end
+
+	for _, playerId in ipairs(GetPlayers()) do
+		if IsPlayerAceAllowed(playerId, 'chat.staffChannel') then
+			TriggerClientEvent('chat:addMessage', playerId, {
+				color = color,
+				args = {'[Staff] ' .. name, message}
+			});
+		end
+	end
+end
+
+AddEventHandler('poodlechat:staffMessage', function(message)
+	StaffMessage(source, message)
+end)
+
+function SetPermissions(source)
+	TriggerClientEvent('poodlechat:setPermissions', source, {
+		canAccessStaffChannel = IsPlayerAceAllowed(source, 'chat.staffChannel')
+	})
+end
+
+AddEventHandler('poodlechat:getPermissions', function()
+	SetPermissions(source)
+end)
+
+RegisterCommand('poodlechat_refresh_perms', function(source, args, raw)
+	for _, playerId in ipairs(GetPlayers()) do
+		SetPermissions(playerId)
+	end
+end)
 
 function SendReportToDiscord(source, id, reason)
 	local reporterName = GetPlayerName(source)

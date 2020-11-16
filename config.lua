@@ -18,6 +18,9 @@ Config.WhisperColor = {254, 127, 156}
 -- Colour for private messages sent to other players
 Config.WhisperEchoColor = {204, 77, 106}
 
+-- Default colour for staff messages
+Config.DefaultStaffColor = {255, 64, 0}
+
 -- Distance at which action messages are visible
 Config.ActionDistance = 50
 
