@@ -17,11 +17,12 @@ Based on the following resources:
 - Text chat is proximity by default
 - /global or /g to send a message to all players
 - /whisper or /w to send a private message
+- /staff channel based on an ace
 - Optionally sends events and global messages to a Discord channel via a webhook
 - Optionally displays messages from a Discord channel in-game
 - Optionally send player reports to a Discord channel
 - Configurable roles based on aces
-- Configurable emoji shortcuts (`:heart:`, `:smile:`, and so on)
+- Configurable emoji shortcuts (`:heart:`, `:smile:`, and so on) and emoji selector
 
 # Configuration
 
@@ -69,7 +70,7 @@ The ID and token of a Discord webhook can be found from the URL: `https://discor
 
 The `ServerConfig.StaffChannelAce` variable in [server/config.lua](server/config.lua) defines the ace that determines which players can access the Staff channel. By default, it is `chat.staffChannel`.
 
-If you add/remove the ace for players while the server is running, you must run `spooner_refresh_perms` or restart the resource to apply the changes.
+If you add/remove the ace for players while the server is running, you must run `poodlechat_refresh_perms` or restart the resource to apply the changes.
 
 ## Roles
 
