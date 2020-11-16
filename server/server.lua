@@ -409,7 +409,7 @@ AddEventHandler('poodlechat:reply', function(target, message)
 end)
 
 function StaffMessage(source, message)
-	if not IsPlayerAceAllowed(source, 'chat.staffChannel') then
+	if not IsPlayerAceAllowed(source, ServerConfig.StaffChannelAce) then
 		TriggerClientEvent('chat:addMessage', source, {
 			color = {255, 0, 0},
 			args = {'Error', 'You do not have access to the Staff channel.'}
@@ -424,7 +424,7 @@ function StaffMessage(source, message)
 	end
 
 	for _, playerId in ipairs(GetPlayers()) do
-		if IsPlayerAceAllowed(playerId, 'chat.staffChannel') then
+		if IsPlayerAceAllowed(playerId, ServerConfig.StaffChannelAce) then
 			TriggerClientEvent('chat:addMessage', playerId, {
 				color = color,
 				args = {'[Staff] ' .. name, message}
@@ -439,7 +439,7 @@ end)
 
 function SetPermissions(source)
 	TriggerClientEvent('poodlechat:setPermissions', source, {
-		canAccessStaffChannel = IsPlayerAceAllowed(source, 'chat.staffChannel')
+		canAccessStaffChannel = IsPlayerAceAllowed(source, ServerConfig.StaffChannelAce)
 	})
 end
 

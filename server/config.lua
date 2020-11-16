@@ -39,6 +39,9 @@ ServerConfig.DiscordRateLimit = 2000
 -- A Steam API key, used for getting avatars from Steam. Leave as '' to disable.
 ServerConfig.SteamKey = ''
 
+-- The ace that grants access to the Staff channel
+ServerConfig.StaffChannelAce = 'chat.staffChannel'
+
 -- Roles that can appear in front of player names, based on an ace.
 -- Optionally, each role can be given a custom colour.
 --
