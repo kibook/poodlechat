@@ -27,15 +27,16 @@ files {
 ui_page 'html/index.html'
 
 shared_scripts {
-	'config.lua',
-	'common.lua',
-	'emoji.lua'
+	'shared/config.lua',
+	'shared/emoji.lua'
 }
 
 client_scripts {
-	'client.lua'
+	'client/client.lua'
 }
 
 server_scripts {
-	'server.lua'
+	'server/config.lua',
+	'server/common.lua',
+	'server/server.lua'
 }

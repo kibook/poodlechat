@@ -393,6 +393,21 @@ AddEventHandler('poodlechat:setPermissions', function(permissions)
 	})
 end)
 
+RegisterCommand('report', function(source, args, raw)
+	if #args < 2 then
+		TriggerEvent('chat:addMessage', {
+			color = {255, 0, 0},
+			args = {'Error', 'You must specify a player and a reason'}
+		})
+		return
+	end
+
+	local player = table.remove(args, 1)
+	local reason = table.concat(args, ' ')
+
+	TriggerServerEvent('poodlechat:report', player, reason)
+end, false)
+
 CreateThread(function()
 	TriggerServerEvent('poodlechat:getPermissions')
 
@@ -414,12 +429,10 @@ CreateThread(function()
 		{name = 'message', help = 'The message to send'}
 	})
 
-	if IsDiscordReportEnabled() then
-		TriggerEvent('chat:addSuggestion', '/report', 'Report another player for abuse', {
-			{name = 'player', help = 'ID or name of the player to report'},
-			{name = 'reason', help = 'Reason you are reporting this player'}
-		})
-	end
+	TriggerEvent('chat:addSuggestion', '/report', 'Report another player for abuse', {
+		{name = 'player', help = 'ID or name of the player to report'},
+		{name = 'reason', help = 'Reason you are reporting this player'}
+	})
 
 	TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
 		{name = "message", help = "The message to send"}

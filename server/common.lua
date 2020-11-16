@@ -4,15 +4,15 @@ function IsSet(value)
 end
 
 function IsDiscordSendEnabled()
-	return IsSet(Config.DiscordWebhookId) and IsSet(Config.DiscordWebhookToken)
+	return IsSet(ServerConfig.DiscordWebhookId) and IsSet(ServerConfig.DiscordWebhookToken)
 end
 
 function IsDiscordReceiveEnabled()
-	return IsSet(Config.DiscordBotToken) and IsSet(Config.DiscordChannel)
+	return IsSet(ServerConfig.DiscordBotToken) and IsSet(ServerConfig.DiscordChannel)
 end
 
 function IsDiscordReportEnabled()
-	return IsSet(Config.DiscordReportChannel) and IsSet(Config.DiscordBotToken)
+	return IsSet(ServerConfig.DiscordReportChannel) and IsSet(ServerConfig.DiscordBotToken)
 end
 
 function IsDiscordEnabled()

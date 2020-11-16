@@ -152,28 +152,28 @@ function SendToDiscord(name, message, color)
 
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
-			DISCORD_API..'/webhooks/'..Config.DiscordWebhookId..'/'.. Config.DiscordWebhookToken,
+			DISCORD_API..'/webhooks/'..ServerConfig.DiscordWebhookId..'/'.. ServerConfig.DiscordWebhookToken,
 			function(err, text, headers) end,
 			'POST',
 			json.encode({
-				username = Config.DiscordName,
+				username = ServerConfig.DiscordName,
 				embeds = connect,
-				avatar_url = Config.DiscordAvatar
+				avatar_url = ServerConfig.DiscordAvatar
 			}),
 			{['Content-Type'] = 'application/json' })
 	end)
 	--PerformHttpRequest(
-	--	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages',
+	--	DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages',
 	--	function(err, text, headers)
 	--	end,
 	--	'POST',
 	--	json.encode({
-	--		username = Config.DiscordName,
+	--		username = ServerConfig.DiscordName,
 	--		embeds = connect,
-	--		avatar_url = Config.DiscordAvatar
+	--		avatar_url = ServerConfig.DiscordAvatar
 	--	}),
 	--	{
-	--		['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+	--		['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken,
 	--		['Content-Type'] = 'application/json'
 	--	})
 end
@@ -182,9 +182,9 @@ function GetNameWithRoleAndColor(source)
 	local name = GetPlayerName(source)
 	local role = nil
 
-	for i = 1, #Config.Roles do
-		if IsPlayerAceAllowed(tostring(source), Config.Roles[i].ace) then
-			role = Config.Roles[i]
+	for i = 1, #ServerConfig.Roles do
+		if IsPlayerAceAllowed(tostring(source), ServerConfig.Roles[i].ace) then
+			role = ServerConfig.Roles[i]
 			break
 		end
 	end
@@ -223,25 +223,25 @@ function SendUserMessageToDiscord(source, name, message, avatar)
 
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
-			DISCORD_API..'/webhooks/'..Config.DiscordWebhookId..'/'..Config.DiscordWebhookToken,
+			DISCORD_API..'/webhooks/'..ServerConfig.DiscordWebhookId..'/'..ServerConfig.DiscordWebhookToken,
 			function(err, text, headers) end,
 			'POST',
 			json.encode(data),
 			{['Content-Type'] = 'application/json'})
 	end)
 	--PerformHttpRequest(
-	--	DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages',
+	--	DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages',
 	--	function(err, text, headers) end,
 	--	'POST',
 	--	json.encode(data),
 	--	{
-	--		['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+	--		['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken,
 	--		['Content-Type'] = 'application/json'
 	--	})
 end
 
 function SendMessageWithDiscordAvatar(source, name, message)
-	if not IsSet(Config.DiscordBotToken) then
+	if not IsSet(ServerConfig.DiscordBotToken) then
 		return false
 	end
 
@@ -253,7 +253,7 @@ function SendMessageWithDiscordAvatar(source, name, message)
 				local hash = json.decode(text)['avatar']
 				local avatar = DISCORD_CDN .. id .. '/' .. hash .. '.png'
 				SendUserMessageToDiscord(source, name, message, avatar)
-			end, 'GET', '', {['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
+			end, 'GET', '', {['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken})
 		end)
 
 		return true
@@ -263,14 +263,14 @@ function SendMessageWithDiscordAvatar(source, name, message)
 end
 
 function SendMessageWithSteamAvatar(source, name, message)
-	if not IsSet(Config.SteamKey) then
+	if not IsSet(ServerConfig.SteamKey) then
 		return false
 	end
 
 	local id = GetIDFromSource('steam', source)
 
 	if id then
-		PerformHttpRequest(STEAM_API .. Config.SteamKey .. '&steamids=' .. tonumber(id, 16), function(err, text, headers)
+		PerformHttpRequest(STEAM_API .. ServerConfig.SteamKey .. '&steamids=' .. tonumber(id, 16), function(err, text, headers)
 			local avatar = string.match(text, '"avatarfull":"(.-)","')
 			SendUserMessageToDiscord(source, name, message, avatar)
 		end)
@@ -475,7 +475,7 @@ function SendReportToDiscord(source, id, reason)
 
 	local data = {
 		embed = {
-			['color'] = Config.DiscordReportColor,
+			['color'] = ServerConfig.DiscordReportColor,
 			['description'] = message
 		},
 		tts = false
@@ -483,7 +483,7 @@ function SendReportToDiscord(source, id, reason)
 
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
-			DISCORD_API .. '/channels/' .. Config.DiscordReportChannel .. '/messages',
+			DISCORD_API .. '/channels/' .. ServerConfig.DiscordReportChannel .. '/messages',
 			function(err, text, headers)
 				-- If there is an error, fallback to printing the report in the server console
 				if err ~= 200 then
@@ -491,44 +491,31 @@ function SendReportToDiscord(source, id, reason)
 				end
 
 				TriggerClientEvent('chat:addMessage', source, {
-					color = Config.DiscordReportFeedbackColor,
-					args = {Config.DiscordReportFeedbackMessage}
+					color = ServerConfig.DiscordReportFeedbackColor,
+					args = {ServerConfig.DiscordReportFeedbackMessage}
 				})
 			end,
 			'POST',
 			json.encode(data),
 			{
-				['Authorization'] = 'Bot ' .. Config.DiscordBotToken,
+				['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken,
 				['Content-Type'] = 'application/json'
 			})
 	end)
 end
 
-if IsDiscordReportEnabled() then
-	RegisterCommand('report', function(source, args, user)
-		if #args < 2 then
-			TriggerClientEvent('chat:addMessage', source, {
-				color = {255, 0, 0},
-				args = {'Error', 'You must specify a player and a reason'}
-			})
-			return
-		end
+AddEventHandler('poodlechat:report', function(player, reason)
+	local id = GetPlayerId(player)
 
-		local player = table.remove(args, 1)
-		local id = GetPlayerId(player)
-
-		if id then
-			local reason = table.concat(args, ' ')
-
-			SendReportToDiscord(source, id, reason)
-		else
-			TriggerClientEvent('chat:addMessage', source, {
-				color = {255, 0, 0},
-				args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
-			})
-		end
-	end, false)
-end
+	if id then
+		SendReportToDiscord(source, id, reason)
+	else
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
+		})
+	end
+end)
 
 AddEventHandler('playerConnecting', function() 
 	SendToDiscord("Server Login", "**" .. GetPlayerName(source) .. "** is connecting to the server.", 65280)
@@ -546,7 +533,7 @@ end)
 local LastMessageId = nil
 
 function DiscordMessage(message)
-	if message.id == Config.DiscordWebhookId then
+	if message.id == ServerConfig.DiscordWebhookId then
 		return
 	end
 
@@ -555,14 +542,14 @@ function DiscordMessage(message)
 	end
 
 	TriggerClientEvent('chat:addMessage', -1, {
-		color = Config.DiscordColor,
+		color = ServerConfig.DiscordColor,
 		args = {'[Discord] ' .. message.name, message.content}
 	})
 end
 
 function GetDiscordMessages()
 	PerformHttpRequest(
-		DISCORD_API ..'/channels/'..Config.DiscordChannel..'/messages?after='..LastMessageId,
+		DISCORD_API ..'/channels/'..ServerConfig.DiscordChannel..'/messages?after='..LastMessageId,
 		function(err, text, headers)
 			if err == 200 then
 				local data = json.decode(text)
@@ -600,13 +587,13 @@ function GetDiscordMessages()
 		end,
 		'GET',
 		'',
-		{['Authorization'] = 'Bot ' .. Config.DiscordBotToken})
+		{['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken})
 end
 
 -- Get the last message ID to start from
 function InitDiscordReceive()
 	PerformHttpRequest(
-		DISCORD_API .. '/channels/' .. Config.DiscordChannel .. '/messages?limit=1',
+		DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages?limit=1',
 		function(err, text, headers)
 			if err == 200 then
 				local data = json.decode(text)
@@ -627,7 +614,7 @@ function InitDiscordReceive()
 		'GET',
 		'',
 		{
-			['Authorization'] = 'Bot ' .. Config.DiscordBotToken
+			['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken
 		})
 end
 
@@ -639,7 +626,7 @@ if IsDiscordEnabled() then
 
 		while true do
 			ProcessDiscordQueue()
-			Wait(Config.DiscordRateLimit)
+			Wait(ServerConfig.DiscordRateLimit)
 		end
 	end)
 end
