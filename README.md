@@ -45,25 +45,27 @@ The following variables in [shared/config.lua](shared/config.lua) control genera
 
 The following variables in [server/config.lua](server/config.lua) control the Discord integration:
 
-| Variable                                    | Description                                                                          |
-|---------------------------------------------|--------------------------------------------------------------------------------------|
-| `ServerConfig.DiscordWebhookId`             | The webhook ID to use to send messages to a channel.                                 |
-| `ServerConfig.DiscordWebhookToken`          | The webhook token to use to send messages to a channel.                              |
-| `ServerConfig.DiscordName`                  | The name to use when sending event messages (joins/disconnects).                     |
-| `ServerConfig.DiscordAvatar`                | The avatar to use when sending event messages or if no avatar is found for a player. |
-| `ServerConfig.DiscordBotToken`              | A Discord bot token to use in order to get messages and player avatars.              |
-| `ServerConfig.DiscordChannel`               | A Discord channel to echo messages in-game from.                                     |
-| `ServerConfig.DiscordColor`                 | The colour for messages from Discord.                                                |
-| `ServerConfig.DiscordReportChannel`         | A Discord channel to send player reports to.                                         |
-| `ServerConfig.DiscordReportColor`           | Colour used for the report message embed on Discord.                                 |
-| `ServerConfig.DiscordReportFeedbackMessage` | Message sent to players upoon submitting a report.                                   |
-| `ServerConfig.DiscordReportFeedbackColor`   | Colour for the above feedback message.                                               |
-| `ServerConfig.DiscordRateLimit`             | Time in milliseconds between any two Discord requests.                               |
-| `ServerConfig.SteamKey`                     | A Steam key to use in order to retrieve avatars from Steam.                          |
+| Variable                                           | Description                                                                          |
+|----------------------------------------------------|--------------------------------------------------------------------------------------|
+| `ServerConfig.DiscordWebhookId`                    | The webhook ID to use to send messages to a channel.                                 |
+| `ServerConfig.DiscordWebhookToken`                 | The webhook token to use to send messages to a channel.                              |
+| `ServerConfig.DiscordName`                         | The name to use when sending event messages (joins/disconnects).                     |
+| `ServerConfig.DiscordAvatar`                       | The avatar to use when sending event messages or if no avatar is found for a player. |
+| `ServerConfig.DiscordBotToken`                     | A Discord bot token to use in order to get messages and player avatars.              |
+| `ServerConfig.DiscordChannel`                      | A Discord channel to echo messages in-game from.                                     |
+| `ServerConfig.DiscordColor`                        | The colour for messages from Discord.                                                |
+| `ServerConfig.DiscordReportWebhook`                | A Discord webhook to send player reports to.                                         |
+| `ServerConfig.DiscordReportColor`                  | Colour used for the report message embed on Discord.                                 |
+| `ServerConfig.DiscordReportFeedbackSuccessMessage` | Message sent to players upon successfully submitting a report.                       |
+| `ServerConfig.DiscordReportFeedbackFailureMessage` | Message sent to players if a report fails to be submitted.                           |
+| `ServerConfig.DiscordReportFeedbackColor`          | Colour for the above feedback message.                                               |
+| `ServerConfig.DiscordRateLimit`                    | Time in milliseconds between any two Discord requests.                               |
+| `ServerConfig.SteamKey`                            | A Steam key to use in order to retrieve avatars from Steam.                          |
 
 All of these are optional, and can be left with their default value (empty string, `''`) to disable the Discord integration.
 
-For *sending* in-game messages to Discord, at minimum `ServerConfig.DiscordWebhookId` and `ServerConfig.DiscordWebhookToken` must be set. For *receiving* messages from Discord and displaying them in-game, at minimum `ServerConfig.DiscordBotToken` and `ServerConfig.DiscordChannel` must be set. For sending player reports to Discord, at minimum `ServerConfig.DiscordBotToken` and `ServerConfig.DiscordReportChannel` must be set.
+- For *sending* in-game messages to Discord, at minimum `ServerConfig.DiscordWebhookId` and `ServerConfig.DiscordWebhookToken` must be set.
+- For *receiving* messages from Discord and displaying them in-game, at minimum `ServerConfig.DiscordBotToken` and `ServerConfig.DiscordChannel` must be set.
 
 The ID and token of a Discord webhook can be found from the URL: `https://discord.com/api/webhooks/<id>/<token>`
 
