@@ -27,14 +27,13 @@ Based on the following resources:
 
 ## General
 
-The following variables in [config.lua](config.lua) control general settings for the chat:
+The following variables in [shared/config.lua](shared/config.lua) control general settings for the chat:
 
 | Variable                      | Description                                                           |
 |-------------------------------|-----------------------------------------------------------------------|
 | `Config.ActionColor`          | The colour for action messages (/me).                                 |
 | `Config.DefaultLocalColor`    | The default colour for local messages.                                |
 | `Config.DefaultGlobalColor`   | The default colour for global messages.                               |
-| `Config.DiscordColor`         | The colour for messages from Discord.                                 |
 | `Config.WhisperColor`         | The colour for received whisper messages.                             |
 | `Config.WhisperEchoColor`     | The colour for sent whisper messages.                                 |
 | `Config.ActionDistance`       | The distance between players at which actions will be visible.        |
@@ -42,34 +41,39 @@ The following variables in [config.lua](config.lua) control general settings for
 
 ## Discord
 
-The following variables in [config.lua](config.lua) control the Discord integration:
+The following variables in [server/config.lua](server/config.lua) control the Discord integration:
 
-| Variable                              | Description                                                                          |
-|---------------------------------------|--------------------------------------------------------------------------------------|
-| `Config.DiscordWebhookId`             | The webhook ID to use to send messages to a channel.                                 |
-| `Config.DiscordWebhookToken`          | The webhook token to use to send messages to a channel.                              |
-| `Config.DiscordName`                  | The name to use when sending event messages (joins/disconnects).                     |
-| `Config.DiscordAvatar`                | The avatar to use when sending event messages or if no avatar is found for a player. |
-| `Config.DiscordBotToken`              | A Discord bot token to use in order to get messages and player avatars.              |
-| `Config.DiscordChannel`               | A Discord channel to echo messages in-game from.                                     |
-| `Config.DiscordReportChannel`         | A Discord channel to send player reports to.                                         |
-| `Config.DiscordReportColor`           | Colour used for the report message embed on Discord.                                 |
-| `Config.DiscordReportFeedbackMessage` | Message sent to players upoon submitting a report.                                   |
-| `Config.DiscordReportFeedbackColor`   | Colour for the above feedback message.                                               |
-| `Config.DiscordRateLimit`             | Time in milliseconds between any two Discord requests.                               |
-| `Config.SteamKey`                     | A Steam key to use in order to retrieve avatars from Steam.                          |
+| Variable                                    | Description                                                                          |
+|---------------------------------------------|--------------------------------------------------------------------------------------|
+| `ServerConfig.DiscordWebhookId`             | The webhook ID to use to send messages to a channel.                                 |
+| `ServerConfig.DiscordWebhookToken`          | The webhook token to use to send messages to a channel.                              |
+| `ServerConfig.DiscordName`                  | The name to use when sending event messages (joins/disconnects).                     |
+| `ServerConfig.DiscordAvatar`                | The avatar to use when sending event messages or if no avatar is found for a player. |
+| `ServerConfig.DiscordBotToken`              | A Discord bot token to use in order to get messages and player avatars.              |
+| `ServerConfig.DiscordChannel`               | A Discord channel to echo messages in-game from.                                     |
+| `ServerConfig.DiscordColor`                 | The colour for messages from Discord.                                                |
+| `ServerConfig.DiscordReportChannel`         | A Discord channel to send player reports to.                                         |
+| `ServerConfig.DiscordReportColor`           | Colour used for the report message embed on Discord.                                 |
+| `ServerConfig.DiscordReportFeedbackMessage` | Message sent to players upoon submitting a report.                                   |
+| `ServerConfig.DiscordReportFeedbackColor`   | Colour for the above feedback message.                                               |
+| `ServerConfig.DiscordRateLimit`             | Time in milliseconds between any two Discord requests.                               |
+| `ServerConfig.SteamKey`                     | A Steam key to use in order to retrieve avatars from Steam.                          |
 
 All of these are optional, and can be left with their default value (empty string, `''`) to disable the Discord integration.
 
-For *sending* in-game messages to Discord, at minimum `Config.DiscordWebhookId` and `Config.DiscordWebhookToken` must be set. For *receiving* messages from Discord and displaying them in-game, at minimum `Config.DiscordBotToken` and `Config.DiscordChannel` must be set. For sending player reports to Discord, at minimum `Config.DiscordBotToken` and `Config.DiscordReportChannel` must be set.
+For *sending* in-game messages to Discord, at minimum `ServerConfig.DiscordWebhookId` and `ServerConfig.DiscordWebhookToken` must be set. For *receiving* messages from Discord and displaying them in-game, at minimum `ServerConfig.DiscordBotToken` and `ServerConfig.DiscordChannel` must be set. For sending player reports to Discord, at minimum `ServerConfig.DiscordBotToken` and `ServerConfig.DiscordReportChannel` must be set.
 
 The ID and token of a Discord webhook can be found from the URL: `https://discord.com/api/webhooks/<id>/<token>`
+
+## Staff channel
+
+The `ServerConfig.StaffChannelAce` variable in [server/config.lua](server/config.lua) defines the ace that determines which players can access the Staff channel. By default, it is `chat.staffChannel`.
 
 ## Roles
 
 Roles are labels that appear next to a player's name in chat, such as "Admin" or "Moderator". Each role is associated with an ace, so that any players with that ace will receive that role. Optionally, each role can be given a colour that overrides the default local and global chat colours for names.
 
-The list of available roles is configured in [config.lua](config.lua).
+The list of available roles is configured in [server/config.lua](server/config.lua).
 
 Example:
 
@@ -89,7 +93,7 @@ add_ace group.moderator chat.moderator allow
 
 ## Emoji
 
-Shortcuts for emoji can be configured in [emoji.lua](emoji.lua).
+Shortcuts for emoji can be configured in [shared/emoji.lua](shared/emoji.lua).
 
 # Commands
 
@@ -124,6 +128,12 @@ Sends a message to the last player that sent you a private message (`/whisper`) 
 ```
 
 Sends a message to nearby players. The default text chat is also overridden to be proximity-based.
+
+```
+/staff [message]
+```
+
+Sends a message to all staff members.
 
 ```
 /togglechat
