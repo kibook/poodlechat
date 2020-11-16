@@ -452,7 +452,7 @@ RegisterCommand('poodlechat_refresh_perms', function(source, args, raw)
 	for _, playerId in ipairs(GetPlayers()) do
 		SetPermissions(playerId)
 	end
-end)
+end, true)
 
 function SendReportToDiscord(source, id, reason)
 	local reporterName = GetPlayerName(source)
