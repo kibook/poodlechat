@@ -69,6 +69,8 @@ The ID and token of a Discord webhook can be found from the URL: `https://discor
 
 The `ServerConfig.StaffChannelAce` variable in [server/config.lua](server/config.lua) defines the ace that determines which players can access the Staff channel. By default, it is `chat.staffChannel`.
 
+If you add/remove the ace for players while the server is running, you must run `spooner_refresh_perms` or restart the resource to apply the changes.
+
 ## Roles
 
 Roles are labels that appear next to a player's name in chat, such as "Admin" or "Moderator". Each role is associated with an ace, so that any players with that ace will receive that role. Optionally, each role can be given a colour that overrides the default local and global chat colours for names.
@@ -122,6 +124,12 @@ Sends a message to nearby players in the form of `[name] [action]`.
 ```
 
 Sends a message to the last player that sent you a private message (`/whisper`) or that you sent a private message to.
+
+```
+/report [player] [reason]
+```
+
+If enabled, sends a player report to a specified Discord channel.
 
 ```
 /say [message]
