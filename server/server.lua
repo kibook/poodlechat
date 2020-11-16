@@ -85,6 +85,7 @@ RegisterNetEvent('poodlechat:globalMessage')
 RegisterNetEvent('poodlechat:actionMessage')
 RegisterNetEvent('poodlechat:whisperMessage')
 RegisterNetEvent('poodlechat:getPermissions')
+RegisterNetEvent('poodlechat:report')
 
 -- Queue to rate limit Discord requests
 local DiscordQueue = {}
