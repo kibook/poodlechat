@@ -154,7 +154,7 @@ function SendToDiscord(name, message, color)
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
 			DISCORD_API..'/webhooks/'..ServerConfig.DiscordWebhookId..'/'.. ServerConfig.DiscordWebhookToken,
-			function(err, text, headers) end,
+			function(status, text, headers) end,
 			'POST',
 			json.encode({
 				username = ServerConfig.DiscordName,
@@ -165,7 +165,7 @@ function SendToDiscord(name, message, color)
 	end)
 	--PerformHttpRequest(
 	--	DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages',
-	--	function(err, text, headers)
+	--	function(status, text, headers)
 	--	end,
 	--	'POST',
 	--	json.encode({
@@ -225,14 +225,14 @@ function SendUserMessageToDiscord(source, name, message, avatar)
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
 			DISCORD_API..'/webhooks/'..ServerConfig.DiscordWebhookId..'/'..ServerConfig.DiscordWebhookToken,
-			function(err, text, headers) end,
+			function(status, text, headers) end,
 			'POST',
 			json.encode(data),
 			{['Content-Type'] = 'application/json'})
 	end)
 	--PerformHttpRequest(
 	--	DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages',
-	--	function(err, text, headers) end,
+	--	function(status, text, headers) end,
 	--	'POST',
 	--	json.encode(data),
 	--	{
@@ -250,7 +250,7 @@ function SendMessageWithDiscordAvatar(source, name, message)
 
 	if id then
 		EnqueueDiscordRequest(function()
-			PerformHttpRequest(DISCORD_API .. '/users/' .. id, function(err, text, headers)
+			PerformHttpRequest(DISCORD_API .. '/users/' .. id, function(status, text, headers)
 				local hash = json.decode(text)['avatar']
 				local avatar = DISCORD_CDN .. id .. '/' .. hash .. '.png'
 				SendUserMessageToDiscord(source, name, message, avatar)
@@ -271,7 +271,7 @@ function SendMessageWithSteamAvatar(source, name, message)
 	local id = GetIDFromSource('steam', source)
 
 	if id then
-		PerformHttpRequest(STEAM_API .. ServerConfig.SteamKey .. '&steamids=' .. tonumber(id, 16), function(err, text, headers)
+		PerformHttpRequest(STEAM_API .. ServerConfig.SteamKey .. '&steamids=' .. tonumber(id, 16), function(status, text, headers)
 			local avatar = string.match(text, '"avatarfull":"(.-)","')
 			SendUserMessageToDiscord(source, name, message, avatar)
 		end)
@@ -454,6 +454,10 @@ RegisterCommand('poodlechat_refresh_perms', function(source, args, raw)
 	end
 end, true)
 
+function IsResponseOk(status)
+	return status >= 200 and status <= 299
+end
+
 function SendReportToDiscord(source, id, reason)
 	local reporterName = GetPlayerName(source)
 	local reporteeName = GetPlayerName(id)
@@ -475,20 +479,43 @@ function SendReportToDiscord(source, id, reason)
 	}, '\n')
 
 	local data = {
-		embed = {
-			['color'] = ServerConfig.DiscordReportColor,
-			['description'] = message
-		},
-		tts = false
+		embeds = {
+			{
+				['color'] = ServerConfig.DiscordReportColor,
+				['description'] = message
+			}
+		}
 	}
 
 	EnqueueDiscordRequest(function()
 		PerformHttpRequest(
-			DISCORD_API .. '/channels/' .. ServerConfig.DiscordReportChannel .. '/messages',
-			function(err, text, headers)
+			ServerConfig.DiscordReportWebhook,
+			function(status, text, headers)
 				-- If there is an error, fallback to printing the report in the server console
-				if err ~= 200 then
-					Log('error', string.format('Failed to send report: %d %s %s\n%s', err, text, json.encode(headers), message))
+				if IsResponseOk(status) then
+					TriggerClientEvent('chat:addMessage', source, {
+						color = ServerConfig.DiscordReportFeedbackColor,
+						args = {ServerConfig.DiscordReportFeedbackSuccessMessage}
+					})
+				else
+					Log('error', string.format('Failed to send report: %d %s %s\n%s', status, text, json.encode(headers), message))
+
+					TriggerClientEvent('chat:addMessage', source, {
+						color = ServerConfig.DiscordReportFeedbackColor,
+						args = {ServerConfig.DiscordReportFeedbackFailureMessage}
+					})
+				end
+			end,
+			'POST',
+			json.encode(data),
+			{['Content-Type'] = 'application/json'})
+		--[[
+		PerformHttpRequest(
+			DISCORD_API .. '/channels/' .. ServerConfig.DiscordReportChannel .. '/messages',
+			function(status, text, headers)
+				-- If there is an error, fallback to printing the report in the server console
+				if IsResponseOk(status) then
+					Log('error', string.format('Failed to send report: %d %s %s\n%s', status, text, json.encode(headers), message))
 				end
 
 				TriggerClientEvent('chat:addMessage', source, {
@@ -502,10 +529,19 @@ function SendReportToDiscord(source, id, reason)
 				['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken,
 				['Content-Type'] = 'application/json'
 			})
+		]]
 	end)
 end
 
 AddEventHandler('poodlechat:report', function(player, reason)
+	if not IsDiscordReportEnabled() then
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'The report function is not enabled.'}
+		})
+		return
+	end
+
 	local id = GetPlayerId(player)
 
 	if id then
@@ -551,8 +587,8 @@ end
 function GetDiscordMessages()
 	PerformHttpRequest(
 		DISCORD_API ..'/channels/'..ServerConfig.DiscordChannel..'/messages?after='..LastMessageId,
-		function(err, text, headers)
-			if err == 200 then
+		function(status, text, headers)
+			if IsResponseOk(status) then
 				local data = json.decode(text)
 
 				if #data > 0 then
@@ -581,7 +617,7 @@ function GetDiscordMessages()
 					LastMessageId = ids[#ids]
 				end
 			else
-				Log('warning', string.format('Failed to receive messages: %d %s %s', err, text, json.encode(headers)))
+				Log('warning', string.format('Failed to receive messages: %d %s %s', status, text, json.encode(headers)))
 			end
 
 			EnqueueDiscordRequest(GetDiscordMessages)
@@ -595,15 +631,15 @@ end
 function InitDiscordReceive()
 	PerformHttpRequest(
 		DISCORD_API .. '/channels/' .. ServerConfig.DiscordChannel .. '/messages?limit=1',
-		function(err, text, headers)
-			if err == 200 then
+		function(status, text, headers)
+			if IsResponseOk(status) then
 				local data = json.decode(text)
 
 				LastMessageId = data[#data].id
 
 				Log('success', 'Ready to receive Discord messages!')
 			else
-				Log('error', string.format('Failed to initialize: %d %s %s', err, text, json.encode(headers)))
+				Log('error', string.format('Failed to initialize: %d %s %s', status, text, json.encode(headers)))
 			end
 
 			if LastMessageId then

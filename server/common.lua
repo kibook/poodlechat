@@ -12,7 +12,7 @@ function IsDiscordReceiveEnabled()
 end
 
 function IsDiscordReportEnabled()
-	return IsSet(ServerConfig.DiscordReportChannel) and IsSet(ServerConfig.DiscordBotToken)
+	return IsSet(ServerConfig.DiscordReportWebhook)
 end
 
 function IsDiscordEnabled()
