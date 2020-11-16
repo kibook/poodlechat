@@ -35,6 +35,7 @@ The following variables in [shared/config.lua](shared/config.lua) control genera
 | `Config.ActionColor`          | The colour for action messages (/me).                                 |
 | `Config.DefaultLocalColor`    | The default colour for local messages.                                |
 | `Config.DefaultGlobalColor`   | The default colour for global messages.                               |
+| `Config.DefaultStaffColor`    | The default colour for staff messages.                                |
 | `Config.WhisperColor`         | The colour for received whisper messages.                             |
 | `Config.WhisperEchoColor`     | The colour for sent whisper messages.                                 |
 | `Config.ActionDistance`       | The distance between players at which actions will be visible.        |
