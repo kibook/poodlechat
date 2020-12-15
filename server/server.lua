@@ -86,6 +86,7 @@ RegisterNetEvent('poodlechat:actionMessage')
 RegisterNetEvent('poodlechat:whisperMessage')
 RegisterNetEvent('poodlechat:getPermissions')
 RegisterNetEvent('poodlechat:report')
+RegisterNetEvent('poodlechat:sendToDiscord')
 
 -- Queue to rate limit Discord requests
 local DiscordQueue = {}
@@ -143,7 +144,7 @@ function stringsplit(inputstr, sep)
 	return t
 end
 
-function SendToDiscord(name, message, color)
+function SendToDiscord(message, color)
 	local connect = {
 		{
 			["color"] = color,
@@ -555,7 +556,7 @@ AddEventHandler('poodlechat:report', function(player, reason)
 end)
 
 AddEventHandler('playerConnecting', function() 
-	SendToDiscord("Server Login", "**" .. GetPlayerName(source) .. "** is connecting to the server.", 65280)
+	SendToDiscord("**" .. GetPlayerName(source) .. "** is connecting to the server.", 65280)
 end)
 
 AddEventHandler('playerDropped', function(reason) 
@@ -563,8 +564,12 @@ AddEventHandler('playerDropped', function(reason)
 	if string.match(reason, "Kicked") or string.match(reason, "Banned") then
 		color = 16007897
 	end
-	SendToDiscord("Server Logout", "**" .. GetPlayerName(source) .. "** has left the server. \n Reason: " .. reason, color)
+	SendToDiscord("**" .. GetPlayerName(source) .. "** has left the server. \n Reason: " .. reason, color)
 end)
+
+AddEventHandler('poodlechat:sendToDiscord', SendToDiscord)
+
+exports('sendToDiscord', SendToDiscord)
 
 -- Display Discord messages in in-game chat
 local LastMessageId = nil
