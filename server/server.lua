@@ -79,7 +79,6 @@ local DISCORD_API = 'https://discord.com/api'
 local DISCORD_CDN = 'https://cdn.discordapp.com/avatars/'
 local STEAM_API = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='
 
-RegisterNetEvent('poodlechat:reply')
 RegisterNetEvent('poodlechat:staffMessage')
 RegisterNetEvent('poodlechat:globalMessage')
 RegisterNetEvent('poodlechat:actionMessage')
@@ -404,10 +403,6 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
 	end
-end)
-
-AddEventHandler('poodlechat:reply', function(target, message)
-	Whisper(source, target, message)
 end)
 
 function StaffMessage(source, message)

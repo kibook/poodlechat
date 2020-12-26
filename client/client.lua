@@ -290,7 +290,7 @@ end)
 function ReplyCommand(source, args, user)
 	if ReplyTo then
 		local message = table.concat(args, " ")
-		TriggerServerEvent('poodlechat:reply', ReplyTo, message)
+		TriggerServerEvent('poodlechat:whisperMessage', ReplyTo, message)
 	else
 		TriggerEvent('chat:addMessage', {color = {255, 0, 0}, args = {'Error', 'No-one to reply to'}})
 	end
