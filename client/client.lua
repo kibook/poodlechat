@@ -260,7 +260,7 @@ function IsInProximity(id, distance)
 	local myCoords = GetEntityCoords(myPed)
 	local coords = GetEntityCoords(ped)
 
-	return GetDistanceBetweenCoords(myCoords, coords, true) < distance
+	return #(myCoords - coords) < distance
 end
 
 AddEventHandler('poodlechat:localMessage', function(id, name, color, message)
