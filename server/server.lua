@@ -414,6 +414,12 @@ function StaffMessage(source, message)
 		return
 	end
 
+	if message == '' then
+		return
+	end
+
+	message = Emojit(message)
+
 	local name, color = GetNameWithRoleAndColor(source)
 
 	if not color then
