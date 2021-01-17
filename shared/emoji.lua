@@ -4276,7 +4276,13 @@ Emoji = {
 	}, {
 		{":gay_pride_flag:", ":rainbow_flag:"},
 		"🏳️‍🌈"
-	}
+	}, {
+		{":partying_face:"}
+		"🥳"
+	}, {
+		{":face_with_symbols_over_mouth:"},
+		"🤬"
+	},
 }
 
 function Emojit(text)
