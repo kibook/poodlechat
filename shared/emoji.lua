@@ -4282,6 +4282,9 @@ Emoji = {
 	}, {
 		{":face_with_symbols_over_mouth:"},
 		"🤬"
+	}, {
+		{":yarn:"},
+		"🧶"
 	},
 }
 
