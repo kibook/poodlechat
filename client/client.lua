@@ -271,7 +271,7 @@ end)
 
 AddEventHandler('poodlechat:action', function(id, name, message)
 	if IsInProximity(id, Config.ActionDistance) then
-		TriggerEvent('chat:addMessage', {color = Config.ActionColor, args = {'^*' .. name .. ' ' .. message}})
+		TriggerEvent('chat:addMessage', {color = Config.ActionColor, args = {'^*' .. name .. '^r^* ' .. message}})
 	end
 end)
 

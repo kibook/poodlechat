@@ -7,6 +7,10 @@ RegisterServerEvent('_chat:messageEntered')
 RegisterServerEvent('chat:clear')
 RegisterServerEvent('__cfx_internal:commandFallback')
 
+function GetName(source)
+	return GetPlayerName(source) or '?'
+end
+
 AddEventHandler('_chat:messageEntered', function(author, color, message, channel)
     if not message or not author then
         return
@@ -22,7 +26,7 @@ AddEventHandler('_chat:messageEntered', function(author, color, message, channel
 end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
-    local name = GetPlayerName(source)
+    local name = GetName(source)
 
     TriggerEvent('chatMessage', source, name, '/' .. command)
 
@@ -35,11 +39,11 @@ end)
 
 -- player join messages
 AddEventHandler('chat:init', function()
-    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) .. ' joined.')
+    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetName(source) .. '^r^2 joined.')
 end)
 
 AddEventHandler('playerDropped', function(reason)
-    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) ..' left (' .. reason .. ')')
+    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetName(source) .. '^r^2 left (' .. reason .. ')')
 end)
 
 -- command suggestions for clients
@@ -180,7 +184,7 @@ function SendToDiscord(message, color)
 end
 
 function GetNameWithRoleAndColor(source)
-	local name = GetPlayerName(source)
+	local name = GetName(source)
 	local role = nil
 
 	for i = 1, #ServerConfig.Roles do
@@ -350,7 +354,7 @@ AddEventHandler('chatMessage', function(source, name, message, channel)
 end)
 
 AddEventHandler('poodlechat:actionMessage', function(message)
-	local name = GetPlayerName(source)
+	local name = GetName(source)
 
 	if message == '' then
 		return
@@ -373,7 +377,7 @@ function GetPlayerId(id)
 	id = string.lower(id)
 
 	for _, playerId in ipairs(GetPlayers()) do
-		if string.lower(GetPlayerName(playerId)) == id then
+		if string.lower(GetName(playerId)) == id then
 			return playerId
 		end
 	end
@@ -394,7 +398,7 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 
 	if id then
 		-- Echo the message to the sender's chat
-		TriggerClientEvent('poodlechat:whisperEcho', source, id, GetPlayerName(id), message)
+		TriggerClientEvent('poodlechat:whisperEcho', source, id, GetName(id), message)
 		-- Send the message to the recipient
 		TriggerClientEvent('poodlechat:whisper', id, source, name, message)
 		-- Set the /reply target for sender and recipient
@@ -461,8 +465,8 @@ function IsResponseOk(status)
 end
 
 function SendReportToDiscord(source, id, reason)
-	local reporterName = GetPlayerName(source)
-	local reporteeName = GetPlayerName(id)
+	local reporterName = GetName(source)
+	local reporteeName = GetName(id)
 	local reporterLicense = GetIDFromSource('license', source)
 	local reporteeLicense = GetIDFromSource('license', id)
 	local reporterIp = GetPlayerEndpoint(source)
@@ -557,7 +561,7 @@ AddEventHandler('poodlechat:report', function(player, reason)
 end)
 
 AddEventHandler('playerConnecting', function() 
-	SendToDiscord("**" .. GetPlayerName(source) .. "** is connecting to the server.", 65280)
+	SendToDiscord("**" .. GetName(source) .. "** is connecting to the server.", 65280)
 end)
 
 AddEventHandler('playerDropped', function(reason) 
@@ -565,7 +569,8 @@ AddEventHandler('playerDropped', function(reason)
 	if string.match(reason, "Kicked") or string.match(reason, "Banned") then
 		color = 16007897
 	end
-	SendToDiscord("**" .. GetPlayerName(source) .. "** has left the server. \n Reason: " .. reason, color)
+
+	SendToDiscord("**" .. GetName(source) .. "** has left the server. \n Reason: " .. reason, color)
 end)
 
 AddEventHandler('poodlechat:sendToDiscord', SendToDiscord)
