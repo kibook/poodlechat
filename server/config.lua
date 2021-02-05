@@ -45,6 +45,15 @@ ServerConfig.SteamKey = ''
 -- The ace that grants access to the Staff channel
 ServerConfig.StaffChannelAce = 'chat.staffChannel'
 
+-- The ace that allows executing commands from Discord
+ServerConfig.ExecuteCommandsAce = 'chat.executeCommands'
+
+-- The prefix used in Discord chat to execute a command
+ServerConfig.ChatCommandPrefix = '!'
+
+-- Whether to automatically delete chat commands from the Discord channel
+ServerConfig.DeleteChatCommands = true
+
 -- Roles that can appear in front of player names, based on an ace.
 -- Optionally, each role can be given a custom colour.
 --

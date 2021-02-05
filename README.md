@@ -97,6 +97,45 @@ add_ace group.admin chat.admin allow
 add_ace group.moderator chat.moderator allow
 ```
 
+## Execute commands from Discord
+
+To enable executing commands from the Discord channel, you must:
+
+1. Add principals for the Discord IDs of all Discord users that can execute commands.
+
+2. Grant those principals the ace defined in `ServerConfig.ExecuteCommandsAce`.
+
+3. Grant the poodlechat resource any aces needed to execute the desired commands.
+
+Example:
+
+```
+# Add Discord users as moderators
+add_principal identifier.discord:123456789 group.moderator
+add_principal identifier.discord:987654321 group.moderator
+
+# Allow moderators to execute commands from Discord
+add_ace group.moderator chat.executeCommands
+
+# Specify which commands can be used from Discord
+add_ace resource.poodlechat command.kick allow
+add_ace resource.poodlechat command.ban allow
+```
+
+You will then be able to prefix messages with `!` in the channel specified in `ServerConfig.DiscordChannel` to have them executed as commands on the server:
+
+```
+!kick "Some Player" "Get outta here!"
+```
+
+The following variables in [server/config.lua](server/config.lua) control aspects of executing commands from Discord:
+
+| Variable                        | Description                                                             |
+|---------------------------------|-------------------------------------------------------------------------|
+| ServerConfig.ExecuteCommandsAce | The ace that allows executing commands from Discord.                    |
+| ServerConfig.ChatCommandPrefix  | The prefix used in Discord chat to execute a command.                   |
+| ServerConfig.DeleteChatCommands | Whether to automatically delete chat commands from the Discord channel. |
+
 ## Emoji
 
 Shortcuts for emoji can be configured in [shared/emoji.lua](shared/emoji.lua).

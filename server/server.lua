@@ -6,6 +6,7 @@ RegisterServerEvent('chat:removeSuggestion')
 RegisterServerEvent('_chat:messageEntered')
 RegisterServerEvent('chat:clear')
 RegisterServerEvent('__cfx_internal:commandFallback')
+RegisterNetEvent('playerJoining')
 
 function GetName(source)
 	return GetPlayerName(source) or '?'
@@ -560,7 +561,7 @@ AddEventHandler('poodlechat:report', function(player, reason)
 	end
 end)
 
-AddEventHandler('playerConnecting', function() 
+AddEventHandler('playerJoining', function()
 	SendToDiscord("**" .. GetName(source) .. "** is connecting to the server.", 65280)
 end)
 
@@ -580,8 +581,19 @@ exports('sendToDiscord', SendToDiscord)
 -- Display Discord messages in in-game chat
 local LastMessageId = nil
 
+function DeleteDiscordMessage(message)
+	EnqueueDiscordRequest(function()
+		PerformHttpRequest(
+			DISCORD_API..'/channels/'..ServerConfig.DiscordChannel..'/messages/'..message.id,
+			function(status, text, headers) end,
+			'DELETE',
+			'',
+			{['Authorization'] = 'Bot ' .. ServerConfig.DiscordBotToken})
+	end)
+end
+
 function DiscordMessage(message)
-	if message.id == ServerConfig.DiscordWebhookId then
+	if message.author.id == ServerConfig.DiscordWebhookId then
 		return
 	end
 
@@ -589,10 +601,20 @@ function DiscordMessage(message)
 		return
 	end
 
-	TriggerClientEvent('chat:addMessage', -1, {
-		color = ServerConfig.DiscordColor,
-		args = {'[Discord] ' .. message.name, message.content}
-	})
+	if string.sub(message.content, 1, #ServerConfig.ChatCommandPrefix) == ServerConfig.ChatCommandPrefix then
+		if IsPrincipalAceAllowed('identifier.discord:'..message.author.id, ServerConfig.ExecuteCommandsAce) then
+			ExecuteCommand(string.sub(message.content, #ServerConfig.ChatCommandPrefix + 1))
+		end
+
+		if ServerConfig.DeleteChatCommands then
+			DeleteDiscordMessage(message)
+		end
+	else
+		TriggerClientEvent('chat:addMessage', -1, {
+			color = ServerConfig.DiscordColor,
+			args = {'[Discord] ' .. message.author.username, message.content}
+		})
+	end
 end
 
 function GetDiscordMessages()
@@ -605,27 +627,22 @@ function GetDiscordMessages()
 				if #data > 0 then
 					-- Extract messages from response
 					local messages = {}
+
 					for _, message in ipairs(data) do
-						messages[message.id] = {
-							id = message.author.id,
-							name = message.author.username,
-							content = message.content
-						}
+						table.insert(messages, message)
 					end
 
 					-- Sort by ID
-					local ids = {}
-					for id, message in pairs(messages) do
-						table.insert(ids, id)
-					end
-					table.sort(ids)
+					table.sort(messages, function(a, b)
+						return a.id < b.id
+					end)
 
 					-- Send to in-game chat
-					for _, id in ipairs(ids) do
-						DiscordMessage(messages[id])
+					for _, message in ipairs(messages) do
+						DiscordMessage(message)
 					end
 
-					LastMessageId = ids[#ids]
+					LastMessageId = messages[#messages].id
 				end
 			else
 				Log('warning', string.format('Failed to receive messages: %d %s %s', status, text, json.encode(headers)))
