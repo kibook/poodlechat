@@ -465,6 +465,8 @@ CreateThread(function()
 					type = 'ON_OPEN'
 				})
 			end
+		elseif IsControlJustReleased(0, isRDR and `INPUT_MP_TEXT_CHAT_ALL` or 245) then
+			SetNuiFocus(true, true)
 		end
 
 		if chatInputActivating then

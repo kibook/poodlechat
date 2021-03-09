@@ -19,7 +19,7 @@ window.APP = {
 		};
 	},
 	destroyed() {
-		//clearInterval(this.focusTimer);
+		clearInterval(this.focusTimer);
 		window.removeEventListener('message', this.listener);
 	},
 	mounted() {
@@ -60,14 +60,11 @@ window.APP = {
 			if (this.showWindowTimer) {
 				clearTimeout(this.showWindowTimer);
 			}
-			setTimeout(() => this.$refs.input.focus(), 100);
-			/*this.focusTimer = setInterval(() => {
+			this.focusTimer = setTimeout(() => {
 				if (this.$refs.input) {
 					this.$refs.input.focus();
-				} else {
-					clearInterval(this.focusTimer);
 				}
-			}, 100);*/
+			}, 100);
 		},
 		ON_MESSAGE({ message }) {
 			this.messages.push(message);
@@ -252,7 +249,7 @@ window.APP = {
 			}
 			this.message = '';
 			this.showInput = false;
-			//clearInterval(this.focusTimer);
+			clearInterval(this.focusTimer);
 			this.resetShowWindowTimer();
 		},
 		setChannel({channelId}) {
