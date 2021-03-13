@@ -162,6 +162,18 @@ Sends a message to all players in the server.
 Sends a message to nearby players in the form of `[name] [action]`.
 
 ```
+/mute [player]
+```
+
+Mutes a player, hiding their messages in text chat.
+
+```
+/muted
+```
+
+Show a list of muted players.
+
+```
 /reply [message]
 /r [message]
 ```
@@ -191,6 +203,12 @@ Sends a message to all staff members.
 ```
 
 Toggles the chat window on/off.
+
+```
+/unmute
+```
+
+Unmute a player, allowing you to see their messages in text chat again.
 
 ```
 /whisper [player] [message]

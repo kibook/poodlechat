@@ -11,6 +11,9 @@ local Channel = 'Local'
 -- Whether to hide the chat
 local HideChat = false
 
+-- Players who's messages will be blocked
+local MutedPlayers = {}
+
 RegisterNetEvent('chatMessage')
 RegisterNetEvent('chat:addTemplate')
 RegisterNetEvent('chat:addMessage')
@@ -202,6 +205,7 @@ local Permissions = {
 	canAccessStaffChannel = false
 }
 
+RegisterNetEvent('poodlechat:globalMessage')
 RegisterNetEvent('poodlechat:localMessage')
 RegisterNetEvent('poodlechat:action')
 RegisterNetEvent('poodlechat:whisperEcho')
@@ -210,6 +214,9 @@ RegisterNetEvent('poodlechat:whisperError')
 RegisterNetEvent('poodlechat:setReplyTo')
 RegisterNetEvent('poodlechat:staffMessage')
 RegisterNetEvent('poodlechat:setPermissions')
+RegisterNetEvent('poodlechat:mute')
+RegisterNetEvent('poodlechat:unmute')
+RegisterNetEvent('poodlechat:showMuted')
 
 function GlobalCommand(source, args, user)
 	TriggerServerEvent('poodlechat:globalMessage', table.concat(args, ' '))
@@ -238,6 +245,18 @@ RegisterCommand('clear', function(source, args, user)
 	TriggerEvent('chat:clear', source)
 end, false)
 
+function AddGlobalMessage(name, color, message)
+	TriggerEvent('chat:addMessage', {color = color, args = {'[Global] ' .. name, message}})
+end
+
+AddEventHandler('poodlechat:globalMessage', function(id, license, name, color, message)
+	if MutedPlayers[license] then
+		return
+	end
+
+	AddGlobalMessage(name, color, message)
+end)
+
 function AddLocalMessage(name, color, message)
 	TriggerEvent('chat:addMessage', {color = color, args = {'[Local] ' .. name, message}})
 end
@@ -263,23 +282,43 @@ function IsInProximity(id, distance)
 	return #(myCoords - coords) < distance
 end
 
-AddEventHandler('poodlechat:localMessage', function(id, name, color, message)
+AddEventHandler('poodlechat:localMessage', function(id, license, name, color, message)
+	if MutedPlayers[license] then
+		return
+	end
+
 	if IsInProximity(id, Config.LocalMessageDistance) then
 		AddLocalMessage(name, color, message)
 	end
 end)
 
-AddEventHandler('poodlechat:action', function(id, name, message)
+AddEventHandler('poodlechat:action', function(id, license, name, message)
+	if MutedPlayers[license] then
+		return
+	end
+
 	if IsInProximity(id, Config.ActionDistance) then
 		TriggerEvent('chat:addMessage', {color = Config.ActionColor, args = {'^*' .. name .. '^r^* ' .. message}})
 	end
 end)
 
-AddEventHandler('poodlechat:whisperEcho', function(id, name, message)
+AddEventHandler('poodlechat:whisperEcho', function(id, license, name, message)
+	if MutedPlayers[license] then
+		TriggerEvent('chat:addMessage', {
+			color = {255, 0, 0},
+			args = {'Error', name .. ' is muted'}
+		})
+		return
+	end
+
 	TriggerEvent('chat:addMessage', {color = Config.WhisperEchoColor, args = {'[Whisper@' .. name .. ']', message}})
 end)
 
-AddEventHandler('poodlechat:whisper', function(id, name, message)
+AddEventHandler('poodlechat:whisper', function(id, license, name, message)
+	if MutedPlayers[license] then
+		return
+	end
+
 	TriggerEvent('chat:addMessage', {color = Config.WhisperColor, args = {'[Whisper] ' .. name, message}})
 end)
 
@@ -408,20 +447,120 @@ RegisterCommand('report', function(source, args, raw)
 	TriggerServerEvent('poodlechat:report', player, reason)
 end, false)
 
+RegisterCommand('mute', function(source, args, raw)
+	if #args < 1 then
+		TriggerEvent('chat:addMessage', {
+			color = {255, 0, 0},
+			args = {'Error', 'You must specify a player to mute'}
+		})
+		return
+	end
+
+	local player = args[1]
+
+	TriggerServerEvent('poodlechat:mute', player)
+end, false)
+
+AddEventHandler('poodlechat:mute', function(id, license)
+	local name = GetPlayerName(GetPlayerFromServerId(id))
+
+	MutedPlayers[license] = name
+
+	TriggerEvent('chat:addMessage', {
+		color = {255, 255, 128},
+		args = {name .. ' was muted'}
+	})
+
+	SetResourceKvp('mutedPlayers', json.encode(MutedPlayers))
+end)
+
+RegisterCommand('unmute', function(source, args, raw)
+	if #args < 1 then
+		TriggerEvent('chat:addMessage', {
+			color = {255, 0, 0},
+			args = {'Error', 'You must specify a player to unmute'}
+		})
+		return
+	end
+
+	local player = args[1]
+
+	TriggerServerEvent('poodlechat:unmute', player)
+end)
+
+AddEventHandler('poodlechat:unmute', function(id, license)
+	local name = GetPlayerName(GetPlayerFromServerId(id))
+
+	MutedPlayers[license] = nil
+
+	TriggerEvent('chat:addMessage', {
+		color = {255, 255, 128},
+		args = {name .. ' was unmuted'}
+	})
+
+	SetResourceKvp('mutedPlayers', json.encode(MutedPlayers))
+end)
+
+RegisterCommand('muted', function(source, args, raw)
+	TriggerServerEvent('poodlechat:showMuted', MutedPlayers)
+end)
+
+AddEventHandler('poodlechat:showMuted', function(mutedPlayerIds)
+	local muted = {}
+
+	table.sort(mutedPlayerIds)
+
+	for _, id in ipairs(mutedPlayerIds) do
+		local name = GetPlayerName(GetPlayerFromServerId(id))
+		table.insert(muted, string.format('%s [%d]', name, id))
+	end
+
+	if #muted == 0 then
+		TriggerEvent('chat:addMessage', {
+			color = {255, 255, 128},
+			args = {'No players are muted'}
+		})
+	else
+		TriggerEvent('chat:addMessage', {
+			color = {255, 255, 128},
+			args = {'Muted', table.concat(muted, ', ')}
+		})
+	end
+end)
+
+function LoadSavedSettings()
+	local mutedJson = GetResourceKvpString('mutedPlayers')
+
+	if mutedJson then
+		MutedPlayers = json.decode(mutedJson)
+	end
+end
+
 CreateThread(function()
 	TriggerServerEvent('poodlechat:getPermissions')
 
+	LoadSavedSettings()
+
 	-- Command documentation
-	TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window', {})
+	TriggerEvent('chat:addSuggestion', '/clear', 'Clear chat window')
+
 	TriggerEvent('chat:addSuggestion', '/global', 'Send a message to all players', {
 		{name = 'message', help = 'The message to send'}
 	})
 	TriggerEvent('chat:addSuggestion', '/g', 'Send a message to all players', {
 		{name = 'message', help = 'The message to send'}
 	})
+
 	TriggerEvent('chat:addSuggestion', '/me', 'Perform an action', {
 		{name = 'action', help = 'The action to perform'}
 	})
+
+	TriggerEvent('chat:addSuggestion', '/mute', 'Mute a player, hiding their messages in text chat', {
+		{name = 'player', help = 'ID or name of the player to mute'}
+	})
+
+	TriggerEvent('chat:addSuggestion', '/muted', 'Show a list of muted players')
+
 	TriggerEvent('chat:addSuggestion', '/reply', 'Reply to the last whisper', {
 		{name = 'message', help = 'The message to send'}
 	})
@@ -437,7 +576,13 @@ CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/say', 'Send a message to nearby players', {
 		{name = "message", help = "The message to send"}
 	})
-	TriggerEvent('chat:addSuggestion', '/togglechat', 'Toggle the chat on/off', {})
+
+	TriggerEvent('chat:addSuggestion', '/togglechat', 'Toggle the chat on/off')
+
+	TriggerEvent('chat:addSuggestion', '/unmute', 'Unmute a player, allowing you to see their messages in text chat again', {
+		{name = 'player', help = 'ID or name of the player to unmute'}
+	})
+
 	TriggerEvent('chat:addSuggestion', '/whisper', 'Send a private message', {
 		{name = "player", help = "ID or name of the player to message"},
 		{name = "message", help = "The message to send"}

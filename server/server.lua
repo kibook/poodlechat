@@ -91,6 +91,9 @@ RegisterNetEvent('poodlechat:whisperMessage')
 RegisterNetEvent('poodlechat:getPermissions')
 RegisterNetEvent('poodlechat:report')
 RegisterNetEvent('poodlechat:sendToDiscord')
+RegisterNetEvent('poodlechat:mute')
+RegisterNetEvent('poodlechat:unmute')
+RegisterNetEvent('poodlechat:showMuted')
 
 -- Queue to rate limit Discord requests
 local DiscordQueue = {}
@@ -215,7 +218,9 @@ function LocalMessage(source, message)
 		color = Config.DefaultLocalColor
 	end
 
-	TriggerClientEvent('poodlechat:localMessage', -1, source, name, color, message)
+	local license = GetIDFromSource('license', source)
+
+	TriggerClientEvent('poodlechat:localMessage', -1, source, license, name, color, message)
 end
 
 function SendUserMessageToDiscord(source, name, message, avatar)
@@ -300,7 +305,9 @@ function GlobalMessage(source, message)
 		color = Config.DefaultGlobalColor
 	end
 
-	TriggerClientEvent('chat:addMessage', -1, {color = color, args = {'[Global] ' .. name, message}})
+	local license = GetIDFromSource('license', source)
+
+	TriggerClientEvent('poodlechat:globalMessage', -1, source, license, name, color, message)
 
 	-- Send global messages to Discord
 	if IsDiscordSendEnabled() then
@@ -363,7 +370,9 @@ AddEventHandler('poodlechat:actionMessage', function(message)
 
 	message = Emojit(message)
 
-	TriggerClientEvent("poodlechat:action", -1, source, name, message)
+	local license = GetIDFromSource('license', source)
+
+	TriggerClientEvent("poodlechat:action", -1, source, license, name, message)
 end, false)
 
 function GetPlayerId(id)
@@ -398,10 +407,13 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 	id = GetPlayerId(id)
 
 	if id then
+		local sendLicense = GetIDFromSource('license', source)
+		local recvLicense = GetIDFromSource('license', id)
+
 		-- Echo the message to the sender's chat
-		TriggerClientEvent('poodlechat:whisperEcho', source, id, GetName(id), message)
+		TriggerClientEvent('poodlechat:whisperEcho', source, id, recvLicense, GetName(id), message)
 		-- Send the message to the recipient
-		TriggerClientEvent('poodlechat:whisper', id, source, name, message)
+		TriggerClientEvent('poodlechat:whisper', id, source, sendLicense, name, message)
 		-- Set the /reply target for sender and recipient
 		TriggerClientEvent('poodlechat:setReplyTo', id, source)
 		TriggerClientEvent('poodlechat:setReplyTo', source, id)
@@ -559,6 +571,50 @@ AddEventHandler('poodlechat:report', function(player, reason)
 			args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
 		})
 	end
+end)
+
+AddEventHandler('poodlechat:mute', function(player)
+	local id = tonumber(GetPlayerId(player))
+
+	if id then
+		local license = GetIDFromSource('license', id)
+		TriggerClientEvent('poodlechat:mute', source, id, license)
+	else
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
+		})
+	end
+end)
+
+AddEventHandler('poodlechat:unmute', function(player)
+	local id = tonumber(GetPlayerId(player))
+
+	if id then
+		local license = GetIDFromSource('license', id)
+		TriggerClientEvent('poodlechat:unmute', source, id, license)
+	else
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'No player with ID or name ' .. player .. ' exists'}
+		})
+	end
+end)
+
+AddEventHandler('poodlechat:showMuted', function(mutedPlayers)
+	local players = GetPlayers()
+
+	local mutedPlayerIds = {}
+
+	for license, name in pairs(mutedPlayers) do
+		for _, id in ipairs(players) do
+			if GetIDFromSource('license', id) == license then
+				table.insert(mutedPlayerIds, tonumber(id))
+			end
+		end
+	end
+
+	TriggerClientEvent('poodlechat:showMuted', source, mutedPlayerIds)
 end)
 
 AddEventHandler('playerJoining', function()
