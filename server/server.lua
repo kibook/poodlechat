@@ -218,7 +218,13 @@ function LocalMessage(source, message)
 		color = Config.DefaultLocalColor
 	end
 
-	local license = GetIDFromSource('license', source)
+	local license
+
+	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
+		license = GetIDFromSource('license', source)
+	else
+		license = false
+	end
 
 	TriggerClientEvent('poodlechat:localMessage', -1, source, license, name, color, message)
 end
@@ -305,7 +311,13 @@ function GlobalMessage(source, message)
 		color = Config.DefaultGlobalColor
 	end
 
-	local license = GetIDFromSource('license', source)
+	local license
+
+	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
+		license = GetIDFromSource('license', source)
+	else
+		license = false
+	end
 
 	TriggerClientEvent('poodlechat:globalMessage', -1, source, license, name, color, message)
 
@@ -370,7 +382,13 @@ AddEventHandler('poodlechat:actionMessage', function(message)
 
 	message = Emojit(message)
 
-	local license = GetIDFromSource('license', source)
+	local license
+
+	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
+		license = GetIDFromSource('license', source)
+	else
+		license = false
+	end
 
 	TriggerClientEvent("poodlechat:action", -1, source, license, name, message)
 end, false)
@@ -407,8 +425,20 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 	id = GetPlayerId(id)
 
 	if id then
-		local sendLicense = GetIDFromSource('license', source)
-		local recvLicense = GetIDFromSource('license', id)
+		local sendLicense
+		local recvLicense
+
+		if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
+			sendLicense = GetIDFromSource('license', source)
+		else
+			sendLicense = false
+		end
+
+		if not IsPlayerAceAllowed(id, ServerConfig.NoMuteAce) then
+			recvLicense = GetIDFromSource('license', id)
+		else
+			recvLicense = false
+		end
 
 		-- Echo the message to the sender's chat
 		TriggerClientEvent('poodlechat:whisperEcho', source, id, recvLicense, GetName(id), message)

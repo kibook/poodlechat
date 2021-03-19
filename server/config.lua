@@ -54,6 +54,9 @@ ServerConfig.ChatCommandPrefix = '!'
 -- Whether to automatically delete chat commands from the Discord channel
 ServerConfig.DeleteChatCommands = true
 
+-- Messages from players with this ace will be visible regardless of them being muted
+ServerConfig.NoMuteAce = 'chat.noMute'
+
 -- Roles that can appear in front of player names, based on an ace.
 -- Optionally, each role can be given a custom colour.
 --
