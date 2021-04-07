@@ -304,6 +304,20 @@ function populateEmojiList(filter) {
 				var evt = new Event('input');
 				input.dispatchEvent(evt);
 				input.focus();
+
+				fetch('https://' + GetParentResourceName() + '/useEmoji', {
+					method: 'POST',
+					headers: {
+						'Content-type': 'application/json'
+					},
+					body: JSON.stringify({
+						emoji: this.innerHTML
+					})
+				}).then(resp => resp.json()).then(resp => {
+					emojis = resp;
+					populateEmojiList(document.getElementById('emoji-search').value);
+				});
+
 			});
 			div.addEventListener('mouseover', function(event) {
 				document.getElementById('emoji-search').placeholder = emoji[0].join(', ');
@@ -322,7 +336,7 @@ window.addEventListener('load', event => {
 		document.getElementById('channel-global').style.color = colorToRgb(resp.globalColor);
 		document.getElementById('channel-staff').style.color = colorToRgb(resp.staffColor);
 
-		emojis = JSON.parse(resp.emoji);
+		emojis = resp.emoji;
 		populateEmojiList();
 	});
 

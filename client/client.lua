@@ -14,6 +14,9 @@ local HideChat = false
 -- Players who's messages will be blocked
 local MutedPlayers = {}
 
+-- Frequencies of emoji usage
+local EmojiUsage = {}
+
 RegisterNetEvent('chatMessage')
 RegisterNetEvent('chat:addTemplate')
 RegisterNetEvent('chat:addMessage')
@@ -394,19 +397,43 @@ function CycleChannel()
 	SetChannel(Channel)
 end
 
+function SortEmoji()
+	local sortedEmoji = {}
+
+	for i = 1, #Emoji do
+		sortedEmoji[i] = Emoji[i]
+	end
+
+	table.sort(sortedEmoji, function(a, b)
+		aUsage = EmojiUsage[a[2]] or 0
+		bUsage = EmojiUsage[b[2]] or 0
+
+		return aUsage > bUsage
+	end)
+
+	return sortedEmoji
+end
+
 RegisterNUICallback('onLoad', function(data, cb)
 	SetChannel(Channel)
 	cb({
 		localColor = Config.DefaultLocalColor,
 		globalColor = Config.DefaultGlobalColor,
 		staffColor = Config.DefaultStaffColor,
-		emoji = json.encode(Emoji)
+		emoji = SortEmoji()
 	})
 end)
 
 RegisterNUICallback('cycleChannel', function(data, cb)
 	CycleChannel()
 	cb({})
+end)
+
+RegisterNUICallback('useEmoji', function(data, cb)
+	local usage = EmojiUsage[data.emoji] or 0
+	EmojiUsage[data.emoji] = usage + 1
+	cb(SortEmoji())
+	SetResourceKvp('emojiUsage', json.encode(EmojiUsage))
 end)
 
 RegisterCommand('togglechat', function(source, args, raw)
@@ -533,6 +560,20 @@ function LoadSavedSettings()
 
 	if mutedJson then
 		MutedPlayers = json.decode(mutedJson)
+	end
+
+	local emojiUsageJson = GetResourceKvpString('emojiUsage')
+
+	if emojiUsageJson then
+		EmojiUsage = json.decode(emojiUsageJson)
+	end
+end
+
+function AddEmojiSuggestions()
+	for i = 1, #Emoji do
+		for k = 1, #Emoji[i][1] do
+			TriggerEvent('chat:addSuggestion', Emoji[i][1][k], Emoji[i][2])
+		end
 	end
 end
 
