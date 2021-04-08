@@ -57,6 +57,9 @@ ServerConfig.DeleteChatCommands = true
 -- Messages from players with this ace will be visible regardless of them being muted
 ServerConfig.NoMuteAce = 'chat.noMute'
 
+-- Framework used to fetch character names. Comment out to disable using character names.
+--ServerConfig.Framework = 'VORP'
+
 -- Roles that can appear in front of player names, based on an ace.
 -- Optionally, each role can be given a custom colour.
 --

@@ -8,8 +8,15 @@ RegisterServerEvent('chat:clear')
 RegisterServerEvent('__cfx_internal:commandFallback')
 RegisterNetEvent('playerJoining')
 
+local VORP = ServerConfig.Framework == 'VORP' and exports.vorp_core:vorpAPI()
+
 function GetName(source)
-	return GetPlayerName(source) or '?'
+	if VORP then
+		local char = VORP.getCharacter(source)
+		return char.firstname .. ' ' .. char.lastname
+	else
+		return GetPlayerName(source) or '?'
+	end
 end
 
 AddEventHandler('_chat:messageEntered', function(author, color, message, channel)
