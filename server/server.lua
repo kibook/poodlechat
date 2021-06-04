@@ -765,16 +765,16 @@ function InitDiscordReceive()
 			if IsResponseOk(status) then
 				local data = json.decode(text)
 
-				LastMessageId = data[#data].id
-
-				Log('success', 'Ready to receive Discord messages!')
-			else
-				Log('error', string.format('Failed to initialize: %d %s %s', status, text, json.encode(headers)))
+				if type(data) == 'table' and data[#data] then
+					LastMessageId = data[#data].id
+				end
 			end
 
 			if LastMessageId then
+				Log('success', 'Ready to receive Discord messages!')
 				EnqueueDiscordRequest(GetDiscordMessages)
 			else
+				Log('error', string.format('Failed to initialize: %d %s %s', status, text, json.encode(headers)))
 				EnqueueDiscordRequest(InitDiscordReceive)
 			end
 		end,
