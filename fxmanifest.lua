@@ -2,7 +2,10 @@ fx_version 'adamant'
 games {'gta5', 'rdr3'}
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 
-description 'PoodleChat'
+name "PoodleChat"
+description "Chat resource used on Poodle's Palace FiveM and RedM servers"
+author "kibukj"
+repository "https://github.com/kibook/poodlechat"
 
 files {
 	'html/index.html',
