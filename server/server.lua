@@ -438,9 +438,9 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 
 	message = Emojit(message)
 
-	id = GetPlayerId(id)
+	local target = GetPlayerId(id)
 
-	if id then
+	if target then
 		local sendLicense
 		local recvLicense
 
@@ -450,19 +450,19 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 			sendLicense = false
 		end
 
-		if not IsPlayerAceAllowed(id, ServerConfig.NoMuteAce) then
-			recvLicense = GetIDFromSource('license', id)
+		if not IsPlayerAceAllowed(target, ServerConfig.NoMuteAce) then
+			recvLicense = GetIDFromSource('license', target)
 		else
 			recvLicense = false
 		end
 
 		-- Echo the message to the sender's chat
-		TriggerClientEvent('poodlechat:whisperEcho', source, id, recvLicense, GetName(id), message)
+		TriggerClientEvent('poodlechat:whisperEcho', source, target, recvLicense, GetName(target), message)
 		-- Send the message to the recipient
-		TriggerClientEvent('poodlechat:whisper', id, source, sendLicense, name, message)
+		TriggerClientEvent('poodlechat:whisper', target, source, sendLicense, name, message)
 		-- Set the /reply target for sender and recipient
-		TriggerClientEvent('poodlechat:setReplyTo', id, source)
-		TriggerClientEvent('poodlechat:setReplyTo', source, id)
+		TriggerClientEvent('poodlechat:setReplyTo', target, source)
+		TriggerClientEvent('poodlechat:setReplyTo', source, target)
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
 	end
