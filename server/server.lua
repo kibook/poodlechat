@@ -243,6 +243,11 @@ function LocalMessage(source, message)
 	end
 
 	TriggerClientEvent('poodlechat:localMessage', -1, source, license, name, color, message)
+
+	exports.logmanager:log {
+		player = source,
+		message = ("Sent a local message: %s"):format(message)
+	}
 end
 
 function SendUserMessageToDiscord(source, name, message, avatar)
@@ -337,6 +342,11 @@ function GlobalMessage(source, message)
 
 	TriggerClientEvent('poodlechat:globalMessage', -1, source, license, name, color, message)
 
+	exports.logmanager:log {
+		player = source,
+		message = ("Sent a global message: %s"):format(message)
+	}
+
 	-- Send global messages to Discord
 	if IsDiscordSendEnabled() then
 		-- Escape @everyone and @here to prevent mentions on Discord
@@ -407,6 +417,11 @@ AddEventHandler('poodlechat:actionMessage', function(message)
 	end
 
 	TriggerClientEvent("poodlechat:action", -1, source, license, name, message)
+
+	exports.logmanager:log {
+		player = source,
+		message = ("Performed an action: %s"):format(message)
+	}
 end, false)
 
 function GetPlayerId(id)
@@ -456,13 +471,20 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 			recvLicense = false
 		end
 
+		local targetName = GetName(target)
+
 		-- Echo the message to the sender's chat
-		TriggerClientEvent('poodlechat:whisperEcho', source, target, recvLicense, GetName(target), message)
+		TriggerClientEvent('poodlechat:whisperEcho', source, target, recvLicense, targetName, message)
 		-- Send the message to the recipient
 		TriggerClientEvent('poodlechat:whisper', target, source, sendLicense, name, message)
 		-- Set the /reply target for sender and recipient
 		TriggerClientEvent('poodlechat:setReplyTo', target, source)
 		TriggerClientEvent('poodlechat:setReplyTo', source, target)
+
+		exports.logmanager:log {
+			player = source,
+			message = ("Whispered to %s: %s"):format(targetName, message)
+		}
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
 	end
@@ -497,6 +519,11 @@ function StaffMessage(source, message)
 			});
 		end
 	end
+
+	exports.logmanager:log {
+		player = source,
+		message = ("Sent a staff message: %s"):format(message)
+	}
 end
 
 AddEventHandler('poodlechat:staffMessage', function(message)
