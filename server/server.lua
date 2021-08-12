@@ -132,7 +132,7 @@ function Log(label, message)
 		color = LogColors.default
 	end
 
-	print(string.format('%s[PoodleChat] %s[%s]%s %s', LogColors.name, color, label, LogColors.default, message))
+	print(string.format('%s[%s]%s %s', color, label, LogColors.default, message))
 end
 
 function GetIDFromSource(Type, ID)
