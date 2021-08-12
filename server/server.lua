@@ -704,8 +704,19 @@ function DiscordMessage(message)
 	end
 
 	if string.sub(message.content, 1, #ServerConfig.ChatCommandPrefix) == ServerConfig.ChatCommandPrefix then
-		if IsPrincipalAceAllowed('identifier.discord:'..message.author.id, ServerConfig.ExecuteCommandsAce) then
-			ExecuteCommand(string.sub(message.content, #ServerConfig.ChatCommandPrefix + 1))
+		local principal = 'identifier.discord:' .. message.author.id
+
+		if IsPrincipalAceAllowed(principal, ServerConfig.ExecuteCommandsAce) then
+			local command = string.sub(message.content, #ServerConfig.ChatCommandPrefix + 1)
+			local commandName = string.match(command, "([^ ]+)")
+
+			if IsPrincipalAceAllowed(principal, 'command.' .. commandName) then
+				ExecuteCommand(string.sub(message.content, #ServerConfig.ChatCommandPrefix + 1))
+			else
+				Log('error', principal .. ' is not allowed to execute ' .. commandName .. ' from Discord')
+			end
+		else
+			Log('error', principal .. ' is not allowed to execute commands from Discord')
 		end
 
 		if ServerConfig.DeleteChatCommands then
