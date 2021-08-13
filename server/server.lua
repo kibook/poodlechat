@@ -371,7 +371,7 @@ RegisterCommand('say', function(source, args, raw)
 		LocalCommand(source, args, raw)
 	-- If source is console, send to all players
 	else
-		TriggerClientEvent('chat:addMessage', -1, {color = {255, 255, 255}, args = {'console', message}})
+		TriggerClientEvent('chat:addMessage', -1, {color = {255, 255, 255}, args = {'console', table.concat(args, ' ')}})
 	end
 end, true)
 
