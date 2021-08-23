@@ -57,6 +57,12 @@ ServerConfig.DeleteChatCommands = true
 -- Messages from players with this ace will be visible regardless of them being muted
 ServerConfig.NoMuteAce = 'chat.noMute'
 
+-- The primary player identifier used by poodlechat
+ServerConfig.Identifier = 'license'
+
+-- Maximum length for player nicknames
+ServerConfig.MaxNicknameLen = 30
+
 -- Framework used to fetch character names. Comment out to disable using character names.
 --ServerConfig.Framework = 'VORP'
 

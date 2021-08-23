@@ -10,14 +10,87 @@ RegisterNetEvent('playerJoining')
 
 local VORP = ServerConfig.Framework == 'VORP' and exports.vorp_core:vorpAPI()
 
+local nicknames = json.decode(GetResourceKvpString('nicknames')) or {}
+
+function GetNickname(source)
+	local identifier = GetIDFromSource(ServerConfig.Identifier, source)
+
+	if identifier then
+		return nicknames[identifier]
+	end
+end
+
+function HasNickname(source)
+	local identifier = GetIDFromSource(ServerConfig.Identifier, source)
+
+	if identifier then
+		return nicknames[identifier] ~= nil
+	else
+		return false
+	end
+end
+
+function SetNickname(source, nickname)
+	local identifier = GetIDFromSource(ServerConfig.Identifier, source)
+
+	if identifier then
+		nicknames[identifier] = nickname
+		SetResourceKvp('nicknames', json.encode(nicknames))
+		return true
+	else
+		return false
+	end
+end
+
+function GetRealName(source)
+	return GetPlayerName(source) or '?'
+end
+
 function GetName(source)
 	if VORP then
 		local char = VORP.getCharacter(source)
 		return char.firstname .. ' ' .. char.lastname
+	elseif HasNickname(source) then
+		return GetNickname(source)
 	else
-		return GetPlayerName(source) or '?'
+		return GetRealName(source)
 	end
 end
+
+function GetNameWithId(source)
+	return GetName(source) .. ' [' .. source .. ']'
+end
+
+RegisterCommand("nick", function(source, args, raw)
+	local nickname = args[1] and table.concat(args, ' ')
+
+	if nickname and string.len(nickname) > ServerConfig.MaxNicknameLen then
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0 ,0},
+			args = {'Error', 'Nicknames cannot be more than ' .. ServerConfig.MaxNicknameLen .. ' characters long'}
+		})
+		return
+	end
+
+	if SetNickname(source, nickname) then
+		if nickname then
+			TriggerClientEvent('chat:addMessage', source, {
+				color = {255, 255, 128},
+				args = {'Your nickname was set to ' .. nickname}
+			})
+		else
+			TriggerClientEvent('chat:addMessage', source, {
+				color = {255, 255, 128},
+				args = {'Your nickname has been unset'}
+			})
+		end
+	else
+		TriggerClientEvent('chat:addMessage', source, {
+			color = {255, 0, 0},
+			args = {'Error', 'Failed to set nickname'}
+		})
+	end
+end, true)
 
 AddEventHandler('_chat:messageEntered', function(author, color, message, channel)
     if not message or not author then
@@ -34,7 +107,7 @@ AddEventHandler('_chat:messageEntered', function(author, color, message, channel
 end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
-    local name = GetName(source)
+    local name = GetNameWithId(source)
 
     TriggerEvent('chatMessage', source, name, '/' .. command)
 
@@ -195,7 +268,7 @@ function SendToDiscord(message, color)
 end
 
 function GetNameWithRoleAndColor(source)
-	local name = GetName(source)
+	local name = GetNameWithId(source)
 	local role = nil
 
 	for i = 1, #ServerConfig.Roles do
@@ -237,7 +310,7 @@ function LocalMessage(source, message)
 	local license
 
 	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
-		license = GetIDFromSource('license', source)
+		license = GetIDFromSource(ServerConfig.Identifier, source)
 	else
 		license = false
 	end
@@ -330,7 +403,7 @@ function GlobalMessage(source, message)
 	local license
 
 	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
-		license = GetIDFromSource('license', source)
+		license = GetIDFromSource(ServerConfig.Identifier, source)
 	else
 		license = false
 	end
@@ -401,7 +474,7 @@ AddEventHandler('poodlechat:actionMessage', function(message)
 	local license
 
 	if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
-		license = GetIDFromSource('license', source)
+		license = GetIDFromSource(ServerConfig.Identifier, source)
 	else
 		license = false
 	end
@@ -445,19 +518,19 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 		local recvLicense
 
 		if not IsPlayerAceAllowed(source, ServerConfig.NoMuteAce) then
-			sendLicense = GetIDFromSource('license', source)
+			sendLicense = GetIDFromSource(ServerConfig.Identifier, source)
 		else
 			sendLicense = false
 		end
 
 		if not IsPlayerAceAllowed(target, ServerConfig.NoMuteAce) then
-			recvLicense = GetIDFromSource('license', target)
+			recvLicense = GetIDFromSource(ServerConfig.Identifier, target)
 		else
 			recvLicense = false
 		end
 
 		-- Echo the message to the sender's chat
-		TriggerClientEvent('poodlechat:whisperEcho', source, target, recvLicense, GetName(target), message)
+		TriggerClientEvent('poodlechat:whisperEcho', source, target, recvLicense, GetNameWithId(target), message)
 		-- Send the message to the recipient
 		TriggerClientEvent('poodlechat:whisper', target, source, sendLicense, name, message)
 		-- Set the /reply target for sender and recipient
@@ -526,8 +599,8 @@ end
 function SendReportToDiscord(source, id, reason)
 	local reporterName = GetName(source)
 	local reporteeName = GetName(id)
-	local reporterLicense = GetIDFromSource('license', source)
-	local reporteeLicense = GetIDFromSource('license', id)
+	local reporterLicense = GetIDFromSource(ServerConfig.Identifier, source)
+	local reporteeLicense = GetIDFromSource(ServerConfig.Identifier, id)
 	local reporterIp = GetPlayerEndpoint(source)
 	local reporteeIp = GetPlayerEndpoint(id)
 
@@ -623,8 +696,16 @@ AddEventHandler('poodlechat:mute', function(player)
 	local id = tonumber(GetPlayerId(player))
 
 	if id then
-		local license = GetIDFromSource('license', id)
-		TriggerClientEvent('poodlechat:mute', source, id, license)
+		local license = GetIDFromSource(ServerConfig.Identifier, id)
+
+		if license then
+			TriggerClientEvent('poodlechat:mute', source, id, license)
+		else
+			TriggerClientEvent('chat:addMessage', source, {
+				color = {255, 0, 0},
+				args = {'Error', 'Failed to mute player'}
+			})
+		end
 	else
 		TriggerClientEvent('chat:addMessage', source, {
 			color = {255, 0, 0},
@@ -637,7 +718,7 @@ AddEventHandler('poodlechat:unmute', function(player)
 	local id = tonumber(GetPlayerId(player))
 
 	if id then
-		local license = GetIDFromSource('license', id)
+		local license = GetIDFromSource(ServerConfig.Identifier, id)
 		TriggerClientEvent('poodlechat:unmute', source, id, license)
 	else
 		TriggerClientEvent('chat:addMessage', source, {
@@ -654,7 +735,7 @@ AddEventHandler('poodlechat:showMuted', function(mutedPlayers)
 
 	for license, name in pairs(mutedPlayers) do
 		for _, id in ipairs(players) do
-			if GetIDFromSource('license', id) == license then
+			if GetIDFromSource(ServerConfig.Identifier, id) == license then
 				table.insert(mutedPlayerIds, tonumber(id))
 			end
 		end
