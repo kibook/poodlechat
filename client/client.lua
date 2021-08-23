@@ -610,6 +610,10 @@ CreateThread(function()
 
 	TriggerEvent('chat:addSuggestion', '/muted', 'Show a list of muted players')
 
+	TriggerEvent('chat:addSuggestion', '/nick', 'Set a nickname used for chat messages', {
+		{name = 'nickname', help = 'The new nickname to use. Omit to unset your current nickname.'}
+	})
+
 	TriggerEvent('chat:addSuggestion', '/reply', 'Reply to the last whisper', {
 		{name = 'message', help = 'The message to send'}
 	})
