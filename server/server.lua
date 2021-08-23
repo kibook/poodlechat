@@ -58,7 +58,7 @@ function GetName(source)
 end
 
 function GetNameWithId(source)
-	return GetName(source) .. ' [' .. source .. ']'
+	return '[' .. source .. '] ' .. GetName(source)
 end
 
 RegisterCommand("nick", function(source, args, raw)
