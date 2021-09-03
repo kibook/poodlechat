@@ -36,9 +36,6 @@ ServerConfig.DiscordReportFeedbackFailureMessage = 'Sorry, something went wrong 
 -- Colour for the above feedback message.
 ServerConfig.DiscordReportFeedbackColor = {255, 165, 0}
 
--- Time in milliseconds between any two Discord requests.
-ServerConfig.DiscordRateLimit = 2000
-
 -- A Steam API key, used for getting avatars from Steam. Leave as '' to disable.
 ServerConfig.SteamKey = ''
 
