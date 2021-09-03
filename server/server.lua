@@ -283,7 +283,7 @@ end
 
 function SendUserMessageToDiscord(source, name, message, avatar)
 	local data = {}
-	data.username = name .. ' [' .. source .. ']'
+	data.username = name
 	data.content = message
 	if avatar then
 		data.avatar_url = avatar
