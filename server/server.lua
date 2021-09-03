@@ -742,8 +742,10 @@ function DiscordMessage(message)
 	end
 end
 
+local LastMessageId
+
 function GetDiscordMessages()
-	Citizen.Await(exports.discord_rest:getChannelMessages(ServerConfig.DiscordChannel, {after = LastMessageId}, ServerConfig.DiscordBotToken):next(function(data)
+	return exports.discord_rest:getChannelMessages(ServerConfig.DiscordChannel, {after = LastMessageId}, ServerConfig.DiscordBotToken):next(function(data)
 		if #data > 0 then
 			-- Extract messages from response
 			local messages = {}
@@ -766,26 +768,28 @@ function GetDiscordMessages()
 		end
 	end, function(err)
 		Log('warning', ('Failed to receive messages: %d'):format(err))
-	end))
-
-	GetDiscordMessages()
+	end)
 end
 
 -- Get the last message ID to start from
 function InitDiscordReceive()
-	exports.discord_rest:getChannel(ServerConfig.DiscordChannel, ServerConfig.DiscordBotToken):next(function(channel)
+	return exports.discord_rest:getChannel(ServerConfig.DiscordChannel, ServerConfig.DiscordBotToken):next(function(channel)
 		Log('success', 'Ready to receive Discord messages!')
 		LastMessageId = channel.last_message_id
-		GetDiscordMessages()
 	end, function(err)
 		Log('error', ('Failed to initialize: %d'):format(err))
 		Citizen.Wait(5000)
-		InitDiscordReceive()
 	end)
 end
 
 if IsDiscordReceiveEnabled() then
 	Citizen.CreateThread(function()
-		InitDiscordReceive()
+		while not LastMessageId do
+			Citizen.Await(InitDiscordReceive())
+		end
+
+		while true do
+			Citizen.Await(GetDiscordMessages())
+		end
 	end)
 end
