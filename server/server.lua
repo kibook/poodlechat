@@ -760,6 +760,10 @@ function DiscordMessage(message)
 			color = ServerConfig.DiscordColor,
 			args = {'[Discord] ' .. message.author.username, message.content}
 		})
+
+		if ServerConfig.PrintToConsole then
+			print(('^2[Discord] %s^7: %s^7'):format(message.author.username, message.content))
+		end
 	end
 end
 
