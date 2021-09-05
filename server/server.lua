@@ -167,7 +167,6 @@ RegisterNetEvent('poodlechat:actionMessage')
 RegisterNetEvent('poodlechat:whisperMessage')
 RegisterNetEvent('poodlechat:getPermissions')
 RegisterNetEvent('poodlechat:report')
-RegisterNetEvent('poodlechat:sendToDiscord')
 RegisterNetEvent('poodlechat:mute')
 RegisterNetEvent('poodlechat:unmute')
 RegisterNetEvent('poodlechat:showMuted')
@@ -679,7 +678,9 @@ AddEventHandler('poodlechat:showMuted', function(mutedPlayers)
 end)
 
 AddEventHandler('playerJoining', function()
-	SendToDiscord("**" .. GetName(source) .. "** is connecting to the server.", 65280)
+	if IsDiscordSendEnabled() then
+		SendToDiscord("**" .. GetName(source) .. "** is connecting to the server.", 65280)
+	end
 end)
 
 AddEventHandler('playerDropped', function(reason)
@@ -688,12 +689,10 @@ AddEventHandler('playerDropped', function(reason)
 		color = 16007897
 	end
 
-	SendToDiscord("**" .. GetName(source) .. "** has left the server. \n Reason: " .. reason, color)
+	if IsDiscordSendEnabled() then
+		SendToDiscord("**" .. GetName(source) .. "** has left the server. \n Reason: " .. reason, color)
+	end
 end)
-
-AddEventHandler('poodlechat:sendToDiscord', SendToDiscord)
-
-exports('sendToDiscord', SendToDiscord)
 
 -- Display Discord messages in in-game chat
 local LastMessageId = nil
