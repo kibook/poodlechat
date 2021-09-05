@@ -764,6 +764,10 @@ function DiscordMessage(message)
 		if ServerConfig.PrintToConsole then
 			print(('^2[Discord] %s^7: %s^7'):format(message.author.username, message.content))
 		end
+
+		exports.logmanager:log {
+			message = ("Message from Discord: %s: %s"):format(message.author.username, message.content)
+		}
 	end
 end
 
