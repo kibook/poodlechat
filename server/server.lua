@@ -102,8 +102,6 @@ AddEventHandler('_chat:messageEntered', function(author, color, message, channel
     if not WasEventCanceled() then
         TriggerClientEvent('chatMessage', -1, author,  { 255, 255, 255 }, message)
     end
-
-    print(author .. '^7: ' .. message .. '^7')
 end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
@@ -280,6 +278,10 @@ function LocalMessage(source, message)
 
 	TriggerClientEvent('poodlechat:localMessage', -1, source, license, name, color, message)
 
+	if ServerConfig.PrintToConsole then
+		print(('^5[Local] %s^7: %s^7'):format(name, message))
+	end
+
 	exports.logmanager:log {
 		player = source,
 		message = ("Sent a local message: %s"):format(message)
@@ -359,6 +361,10 @@ function GlobalMessage(source, message)
 
 	TriggerClientEvent('poodlechat:globalMessage', -1, source, license, name, color, message)
 
+	if ServerConfig.PrintToConsole then
+		print(('^3[Global] %s^7: %s^7'):format(name, message))
+	end
+
 	exports.logmanager:log {
 		player = source,
 		message = ("Sent a global message: %s"):format(message)
@@ -435,6 +441,10 @@ AddEventHandler('poodlechat:actionMessage', function(message)
 
 	TriggerClientEvent("poodlechat:action", -1, source, license, name, message)
 
+	if ServerConfig.PrintToConsole then
+		print(('^6%s %s^7'):format(name, message))
+	end
+
 	exports.logmanager:log {
 		player = source,
 		message = ("Performed an action: %s"):format(message)
@@ -496,9 +506,16 @@ AddEventHandler('poodlechat:whisperMessage', function(id, message)
 		TriggerClientEvent('poodlechat:setReplyTo', target, source)
 		TriggerClientEvent('poodlechat:setReplyTo', source, target)
 
+		local sendName = GetRealName(source)
+		local recvName = GetRealName(target)
+
+		if ServerConfig.PrintToConsole then
+			print(('^9[Whisper] %s -> %s^7: %s^7'):format(sendName, recvName, message))
+		end
+
 		exports.logmanager:log {
 			player = source,
-			message = ("Whispered to %s: %s"):format(GetRealName(target), message)
+			message = ("Whispered to %s: %s"):format(recvName, message)
 		}
 	else
 		TriggerClientEvent('poodlechat:whisperError', source, id)
@@ -533,6 +550,10 @@ function StaffMessage(source, message)
 				args = {'[Staff] ' .. name, message}
 			});
 		end
+	end
+
+	if ServerConfig.PrintToConsole then
+		print(('^1[Staff] %s^7: %s^7'):format(name, message))
 	end
 
 	exports.logmanager:log {
