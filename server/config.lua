@@ -60,6 +60,9 @@ ServerConfig.Identifier = 'license'
 -- Maximum length for player nicknames
 ServerConfig.MaxNicknameLen = 30
 
+-- Print chat messages to console
+ServerConfig.PrintToConsole = true
+
 -- Framework used to fetch character names. Comment out to disable using character names.
 --ServerConfig.Framework = 'VORP'
 
