@@ -189,3 +189,30 @@ textarea:focus, input:focus {
 .hidden {
 	display: none;
 }
+
+#message3d {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	user-select: none;
+	z-index: -1;
+}
+
+.message3d {
+	position: absolute;
+	max-width: 50vw;
+	max-height: 5vh;
+	padding: 0.5vh 0.5vw;
+	border-radius: 20px;
+	background-color: rgba(4, 22, 40, 0.9);
+	transform: translate(-50%, -50%);
+	text-align: center;
+	font-weight: bold;
+	font-size: 2vh;
+	overflow: hidden;
+	white-space: nowrap;
+	white-space-collapse: discard;
+	text-overflow: ellipsis;
+}

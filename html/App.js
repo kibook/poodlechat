@@ -270,6 +270,38 @@ window.APP = {
 				document.getElementById('channel-staff').style.display = 'none';
 			}
 		},
+		create3dMessage({id, onScreen, screenX, screenY, color, text, timeout}) {
+			let div = document.getElementById('message3d-' + id);
+
+			if (div) {
+				div.remove();
+			}
+
+			div = document.createElement('div');
+			div.id = 'message3d-' + id;
+			div.className = 'message3d';
+			div.style.color = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+			div.innerText = text;
+
+			document.getElementById('message3d').appendChild(div);
+
+			setTimeout(() => div.remove(), timeout);
+		},
+		update3dMessage({id, onScreen, screenX, screenY}) {
+			let div = document.getElementById('message3d-' + id);
+
+			if (div) {
+				if (onScreen) {
+					div.style.display = 'block';
+					let x = screenX * 100 + 'vw';
+					let y = screenY * 100 + 'vh';
+					div.style.top = y;
+					div.style.left = x;
+				} else {
+					div.style.display = 'none';
+				}
+			}
+		},
 	},
 };
 

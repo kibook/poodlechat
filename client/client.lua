@@ -17,6 +17,9 @@ local MutedPlayers = {}
 -- Frequencies of emoji usage
 local EmojiUsage = {}
 
+-- Display messages above players' heads
+local DisplayMessagesAbovePlayers = ClientConfig.DisplayMessagesAbovePlayersByDefault
+
 RegisterNetEvent('chatMessage')
 RegisterNetEvent('chat:addTemplate')
 RegisterNetEvent('chat:addMessage')
@@ -221,6 +224,56 @@ RegisterNetEvent('poodlechat:mute')
 RegisterNetEvent('poodlechat:unmute')
 RegisterNetEvent('poodlechat:showMuted')
 
+local function getPedScreenCoord(ped)
+	local pedCoords = GetEntityCoords(ped)
+	local min, max = GetModelDimensions(GetEntityModel(ped))
+	local zOffset = (max.z - min.z) / 2
+
+	return GetScreenCoordFromWorldCoord(pedCoords.x, pedCoords.y, pedCoords.z + zOffset)
+end
+
+local function displayTextAbovePlayer(serverId, color, text)
+	local player = GetPlayerFromServerId(serverId)
+
+	if player == -1 then
+		return
+	end
+
+	local playerPed = GetPlayerPed(player)
+
+	if not DoesEntityExist(playerPed) then
+		return
+	end
+
+	local timeout = math.min(math.max(ClientConfig.MinOverheadMessageDisplayTime, text:len() * ClientConfig.OverheadMessageDisplayTimePerChar), ClientConfig.MaxOverheadMessageDisplayTime)
+
+	SendNUIMessage {
+		type = "create3dMessage",
+		id = serverId,
+		color = color,
+		text = text,
+		timeout = timeout
+	}
+
+	Citizen.CreateThread(function()
+		local endTime = GetGameTimer() + timeout
+
+		while GetGameTimer() < endTime do
+			local onScreen, screenX, screenY = getPedScreenCoord(playerPed)
+
+			SendNUIMessage {
+				type = 'update3dMessage',
+				id = serverId,
+				onScreen = onScreen,
+				screenX = screenX,
+				screenY = screenY
+			}
+
+			Citizen.Wait(50)
+		end
+	end)
+end
+
 function GlobalCommand(source, args, user)
 	TriggerServerEvent('poodlechat:globalMessage', table.concat(args, ' '))
 end
@@ -248,6 +301,17 @@ RegisterCommand('clear', function(source, args, user)
 	TriggerEvent('chat:clear', source)
 end, false)
 
+RegisterCommand('toggleoverhead', function(source, args, raw)
+	DisplayMessagesAbovePlayers = not DisplayMessagesAbovePlayers
+
+	TriggerEvent('chat:addMessage', {
+		color = {255, 255, 128},
+		args = {'Overhead messages', DisplayMessagesAbovePlayers and 'on' or 'off'}
+	})
+
+	SetResourceKvp("displayMessagesAbovePlayers", DisplayMessagesAbovePlayers and "true" or "false")
+end, false)
+
 function AddGlobalMessage(name, color, message)
 	TriggerEvent('chat:addMessage', {color = color, args = {'[Global] ' .. name, message}})
 end
@@ -258,6 +322,10 @@ AddEventHandler('poodlechat:globalMessage', function(id, license, name, color, m
 	end
 
 	AddGlobalMessage(name, color, message)
+
+	if DisplayMessagesAbovePlayers then
+		displayTextAbovePlayer(id, color, message)
+	end
 end)
 
 function AddLocalMessage(name, color, message)
@@ -296,6 +364,10 @@ AddEventHandler('poodlechat:localMessage', function(id, license, name, color, me
 
 	if IsInProximity(id, Config.LocalMessageDistance) then
 		AddLocalMessage(name, color, message)
+
+		if DisplayMessagesAbovePlayers then
+			displayTextAbovePlayer(id, color, message)
+		end
 	end
 end)
 
@@ -306,6 +378,10 @@ AddEventHandler('poodlechat:action', function(id, license, name, message)
 
 	if IsInProximity(id, Config.ActionDistance) then
 		TriggerEvent('chat:addMessage', {color = Config.ActionColor, args = {'^*' .. name .. '^r^* ' .. message}})
+
+		if DisplayMessagesAbovePlayers then
+			displayTextAbovePlayer(id, Config.ActionColor, '*' .. message .. '*')
+		end
 	end
 end)
 
@@ -319,6 +395,10 @@ AddEventHandler('poodlechat:whisperEcho', function(id, license, name, message)
 	end
 
 	TriggerEvent('chat:addMessage', {color = Config.WhisperEchoColor, args = {'[Whisper@' .. name .. ']', message}})
+
+	if DisplayMessagesAbovePlayers then
+		displayTextAbovePlayer(GetPlayerServerId(PlayerId()), Config.WhisperColor, message)
+	end
 end)
 
 AddEventHandler('poodlechat:whisper', function(id, license, name, message)
@@ -327,6 +407,10 @@ AddEventHandler('poodlechat:whisper', function(id, license, name, message)
 	end
 
 	TriggerEvent('chat:addMessage', {color = Config.WhisperColor, args = {'[Whisper] ' .. name, message}})
+
+	if DisplayMessagesAbovePlayers then
+		displayTextAbovePlayer(id, Config.WhisperColor, message)
+	end
 end)
 
 AddEventHandler('poodlechat:whisperError', function(id)
@@ -570,6 +654,12 @@ function LoadSavedSettings()
 
 	if emojiUsageJson then
 		EmojiUsage = json.decode(emojiUsageJson)
+	end
+
+	local displayMessagesAbovePlayers = GetResourceKvpString('displayMessagesAbovePlayers')
+
+	if displayMessagesAbovePlayers then
+		DisplayMessagesAbovePlayers = displayMessagesAbovePlayers == 'true'
 	end
 end
 
