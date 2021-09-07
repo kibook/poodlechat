@@ -230,10 +230,15 @@ RegisterNetEvent('poodlechat:showMuted')
 
 local function getPedScreenCoord(ped)
 	local pedCoords = GetEntityCoords(ped)
-	local min, max = GetModelDimensions(GetEntityModel(ped))
-	local zOffset = (max.z - min.z) / 2
+	local myCoords = GetEntityCoords(PlayerPedId())
 
-	return GetScreenCoordFromWorldCoord(pedCoords.x, pedCoords.y, pedCoords.z + zOffset)
+	if #(myCoords - pedCoords) <= ClientConfig.OverheadMessageDistance then
+		local min, max = GetModelDimensions(GetEntityModel(ped))
+		local zOffset = (max.z - min.z) / 2
+		return GetScreenCoordFromWorldCoord(pedCoords.x, pedCoords.y, pedCoords.z + zOffset)
+	else
+		return false, 0.0, 0.0
+	end
 end
 
 local function displayTextAbovePlayer(serverId, color, text)
@@ -540,6 +545,17 @@ RegisterCommand('staff', function(source, args, raw)
 	end
 
 	TriggerServerEvent('poodlechat:staffMessage', message)
+end)
+
+AddEventHandler('poodlechat:staffMessage', function(id, name, color, message)
+	TriggerEvent('chat:addMessage', {
+		color = color,
+		args = {'[Staff] ' .. name, message}
+	})
+
+	if DisplayMessagesAbovePlayers then
+		displayTextAbovePlayer(id, color, message)
+	end
 end)
 
 AddEventHandler('poodlechat:setPermissions', function(permissions)

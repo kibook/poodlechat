@@ -544,10 +544,7 @@ function StaffMessage(source, message)
 
 	for _, playerId in ipairs(GetPlayers()) do
 		if IsPlayerAceAllowed(playerId, ServerConfig.StaffChannelAce) then
-			TriggerClientEvent('chat:addMessage', playerId, {
-				color = color,
-				args = {'[Staff] ' .. name, message}
-			});
+			TriggerClientEvent('poodlechat:staffMessage', playerId, source, name, color, message)
 		end
 	end
 
