@@ -226,10 +226,15 @@ RegisterNetEvent('poodlechat:showMuted')
 
 local function getPedScreenCoord(ped)
 	local pedCoords = GetEntityCoords(ped)
-	local min, max = GetModelDimensions(GetEntityModel(ped))
-	local zOffset = (max.z - min.z) / 2
+	local myCoords = GetEntityCoords(PlayerPedId())
 
-	return GetScreenCoordFromWorldCoord(pedCoords.x, pedCoords.y, pedCoords.z + zOffset)
+	if #(myCoords - pedCoords) <= ClientConfig.OverheadMessageDistance then
+		local min, max = GetModelDimensions(GetEntityModel(ped))
+		local zOffset = (max.z - min.z) / 2
+		return GetScreenCoordFromWorldCoord(pedCoords.x, pedCoords.y, pedCoords.z + zOffset)
+	else
+		return false, 0.0, 0.0
+	end
 end
 
 local function displayTextAbovePlayer(serverId, color, text)
