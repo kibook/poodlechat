@@ -538,6 +538,17 @@ RegisterCommand('staff', function(source, args, raw)
 	TriggerServerEvent('poodlechat:staffMessage', message)
 end)
 
+AddEventHandler('poodlechat:staffMessage', function(id, name, color, message)
+	TriggerEvent('chat:addMessage', {
+		color = color,
+		args = {'[Staff] ' .. name, message}
+	})
+
+	if DisplayMessagesAbovePlayers then
+		displayTextAbovePlayer(id, color, message)
+	end
+end)
+
 AddEventHandler('poodlechat:setPermissions', function(permissions)
 	Permissions = permissions
 
