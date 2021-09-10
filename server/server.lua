@@ -220,7 +220,7 @@ function SendToDiscord(message, color)
 		}
 	}
 
-	exports.discord_rest:executeWebhook(ServerConfig.DiscordWebhookId, ServerConfig.DiscordWebhookToken, {
+	exports.discord_rest:executeWebhook(ServerConfig.DiscordWebhookId, ServerConfig.DiscordWebhookToken, nil, {
 		username = ServerConfig.DiscordName,
 		embeds = connect,
 		avatar_url = ServerConfig.DiscordAvatar
@@ -291,7 +291,7 @@ function SendUserMessageToDiscord(source, name, message, avatar)
 	end
 	data.tts = false
 
-	exports.discord_rest:executeWebhook(ServerConfig.DiscordWebhookId, ServerConfig.DiscordWebhookToken, data)
+	exports.discord_rest:executeWebhook(ServerConfig.DiscordWebhookId, ServerConfig.DiscordWebhookToken, nil, data)
 end
 
 function SendMessageWithDiscordAvatar(source, name, message)
