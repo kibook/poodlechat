@@ -228,7 +228,7 @@ function SendToDiscord(message, color)
 end
 
 function GetNameWithRoleAndColor(source)
-	local name = GetNameWithId(source)
+	local name = GetName(source)
 	local role = nil
 
 	for i = 1, #ServerConfig.Roles do
@@ -239,9 +239,9 @@ function GetNameWithRoleAndColor(source)
 	end
 
 	if role then
-		return role.name .. ' | ' .. name, role.color
+		return '[' .. source .. '] ' .. role.name .. ' | ' .. name, role.color
 	else
-		return name, nil
+		return '[' .. source .. '] ' .. name, nil
 	end
 end
 
