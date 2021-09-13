@@ -7,10 +7,8 @@ description "Chat resource used on Poodle's Palace FiveM and RedM servers"
 author "kibukj"
 repository "https://github.com/kibook/poodlechat"
 
-dependencies {
-	"discord_rest", -- https://github.com/kibook/discord_rest
-	"logmanager"
-}
+dependency "discord_rest" -- https://github.com/kibook/discord_rest
+dependency "logmanager"   -- https://github.com/kibook/logmanager
 
 files {
 	"html/index.html",
