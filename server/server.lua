@@ -57,6 +57,13 @@ function GetName(source)
 	end
 end
 
+--- Get a player's chat name.
+-- @function getName
+-- @param source The server ID of the player.
+-- @return The player's chat name, which may be their real name, character name or nickname, whichever appears in chat.
+-- @usage local name = exports.poodlechat:getName(1)
+exports("getName", GetName)
+
 function GetNameWithId(source)
 	return '[' .. source .. '] ' .. GetName(source)
 end
