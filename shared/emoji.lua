@@ -1,5 +1,6 @@
 Emoji = {
     {
+
         {":grinning:"},
         "😀"
     },
@@ -876,6 +877,10 @@ Emoji = {
         "🏳‍🌈"
     },
     {
+        {":transgender_flag:"},
+        "🏳️‍⚧️"
+    },
+    {
         {":white_flag:"},
         "🏳️"
     },
@@ -1748,6 +1753,18 @@ Emoji = {
         "🤙"
     },
     {
+        {":call_me_tone1:"},
+        "🤙🏻"
+    },
+    {
+        {":call_me_tone4:"},
+        "🤙🏽"
+    },
+    {
+        {":call_me_tone5:"},
+        "🤙🏿"
+    },
+    {
         {":raised_back_of_hand:"},
         "🤚"
     },
@@ -1790,6 +1807,26 @@ Emoji = {
     {
         {":pregnant_woman:"},
         "🤰"
+    },
+    {
+        {":pregnant_woman_tone1:"},
+        "🤰🏻"
+    },
+    {
+        {":pregnant_woman_tone3:"},
+        "🤰🏽"
+    },
+    {
+        {":pregnant_woman_tone4:"},
+        "🤰🏾"
+    },
+    {
+        {":pregnant_woman_tone5:"},
+        "🤰🏿"
+    },
+    {
+        {":pregnant_woman_tone2:"},
+        "🤰🏼"
     },
     {
         {":breastfeeding:"},
@@ -5824,6 +5861,10 @@ Emoji = {
         "🔋"
     },
     {
+        {":low_battery:"},
+        "🪫"
+    },
+    {
         {":electric_plug:"},
         "🔌"
     },
@@ -6322,6 +6363,10 @@ Emoji = {
     {
         {":trolleybus:"},
         "🚎"
+    },
+    {
+        {":troll:"},
+        "🧌"
     },
     {
         {":busstop:"},
@@ -7048,6 +7093,10 @@ Emoji = {
         "♿"
     },
     {
+        {":wheel:"},
+        "🛞"
+    },
+    {
         {":hammer_and_pick:"},
         "⚒"
     },
@@ -7566,5 +7615,325 @@ Emoji = {
     {
         {":woman_bouncing_ball:"},
         "⛹‍♀"
+    },
+    {
+        {":melting_face:"},
+        "🫠"
+    },
+    {
+        {":face_with_open_eyes_and_hand_over_mouth:"},
+        "🫢"
+    },
+    {
+        {":face_with_peeking_eyes:"},
+        "🫣"
+    },
+    {
+        {":face_with_peeking_eyes:"},
+        "🫣"
+    },
+    {
+        {":saluting_face:"},
+        "🫡"
+    },
+    {
+        {":dotted_line_face:"},
+        "🫥"
+    },
+    {
+        {":face_with_diagonal_mouth:"},
+        "🫤"
+    	},
+    {
+        {":face_holding_back_tears:"},
+        "🥹"
+    },
+    {
+        {":rightwards_hand:"},
+        "🫱"
+    },
+    {
+        {":rightwards_hand_tone1:"},
+        "🫱🏻"
+    },
+    {
+        {":rightwards_hand_tone2:"},
+        "🫱🏼"
+    },
+    {
+        {":rightwards_hand_tone3:"},
+        "🫱🏽"
+    },
+    {
+        {":rightwards_hand_tone4:"},
+        "🫱🏾"
+    },
+    {
+        {":rightwards_hand_tone5:"},
+        "🫱🏿"
+    },
+    {
+        {":leftwards_hand:"},
+        "🫲"
+    },
+    {
+        {":leftwards_hand_tone1:"},
+        "🫲🏻"
+    },
+    {
+        {":leftwards_hand_tone2:"},
+        "🫲🏼"
+    },
+    {
+        {":leftwards_hand_tone3:"},
+        "🫲🏽"
+    },
+    {
+        {":leftwards_hand_tone4:"},
+        "🫲🏾"
+    },
+    {
+        {":leftwards_hand_tone5:"},
+        "🫲🏿"
+    },
+    {
+        {":palm_down_hand:"},
+        "🫳"
+    },
+    {
+        {":palm_down_hand_tone1:"},
+        "🫳🏻"
+    },
+    {
+        {":palm_down_hand_tone2:"},
+        "🫳🏼"
+    },
+    {
+        {":palm_down_hand_tone3:"},
+        "🫳🏽"
+    },
+    {
+        {":palm_down_hand_tone4:"},
+        "🫳🏾"
+    },
+    {
+        {":palm_down_hand_tone5:"},
+        "🫳🏿"
+    },
+    {
+        {":palm_up_hand:"},
+        "🫴"
+    },
+    {
+        {":palm_up_hand_tone1:"},
+        "🫴🏻"
+    },
+    {
+        {":palm_up_hand_tone2:"},
+        "🫴🏼"
+    },
+    {
+        {":palm_up_hand_tone3:"},
+        "🫴🏽"
+    },
+    {
+        {":palm_up_hand_tone4:"},
+        "🫴🏾"
+    },
+    {
+        {":palm_up_hand_tone5:"},
+        "🫴🏿"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed:"},
+        "🫰"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed_tone1:"},
+        "🫰🏻"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed_tone2:"},
+        "🫰🏼"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed_tone3:"},
+        "🫰🏽"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed_tone4:"},
+        "🫰🏾"
+    },
+    {
+        {":hand_with_index_finger_and_thumb_crossed_tone5:"},
+        "🫰🏿"
+    },
+    {
+        {":index_pointing_at_the_viewer:"},
+        "🫵"
+    },
+    {
+        {":index_pointing_at_the_viewer_tone1:"},
+        "🫵🏻"
+    },
+    {
+        {":index_pointing_at_the_viewer_tone2:"},
+        "🫵🏼"
+    },
+    {
+        {":index_pointing_at_the_viewer_tone3:"},
+        "🫵"
+    },
+    {
+        {":index_pointing_at_the_viewer_tone4:"},
+        "🫵🏾"
+    },
+    {
+        {":index_pointing_at_the_viewer_tone5:"},
+        "🫵🏿"
+    },
+    {
+        {":heart_hands:"},
+        "🫶"
+    },
+    {
+        {":heart_hands_tone1:"},
+        "🫶🏻"
+    },
+    {
+        {":heart_hands_tone2:"},
+        "🫶🏼"
+    },
+    {
+        {":heart_hands_tone3:"},
+        "🫶🏽"
+    },
+    {
+        {":heart_hands_tone4:"},
+        "🫶🏾"
+    },
+    {
+        {":heart_hands_tone5:"},
+        "🫶🏿"
+    },
+    {
+        {":biting_lip:"},
+        "🫦"
+    },
+    {
+        {":pregnant_man:"},
+        "🫃"
+    },
+    {
+        {":pregnant_man_tone1:"},
+        "🫃🏻"
+    },
+    {
+        {":pregnant_man_tone2:"},
+        "🫃🏼"
+    },
+    {
+        {":pregnant_man_tone3:"},
+        "🫃🏽"
+    },
+    {
+        {":pregnant_man_tone4:"},
+        "🫃🏾"
+    },
+    {
+        {":pregnant_man_tone5:"},
+        "🫃🏿"
+    },
+    {
+        {":pregnant_man_tone5:"},
+        "🫃🏿"
+    },
+    {
+        {":pregnant_person:"},
+        "🫄"
+    },
+    {
+        {":pregnant_person_tone1:"},
+        "🫄🏻"
+    },
+    {
+        {":pregnant_person_tone2:"},
+        "🫄🏼"
+    },
+    {
+        {":pregnant_person_tone3:"},
+        "🫄🏽"
+    },
+    {
+        {":pregnant_person_tone4:"},
+        "🫄🏾"
+    },
+    {
+        {":pregnant_person_tone5:"},
+        "🫄🏿"
+    },
+    {
+        {":coral:"},
+        "🪸"
+    },
+    {
+        {":lotus:"},
+        "🪷"
+    },
+    {
+        {":empty_nest:"},
+        "🪹"
+    },
+    {
+        {":nest_with_eggs:"},
+        "🪺"
+    },
+    {
+        {":beans:"},
+        "🫘"
+    },
+    {
+        {":pouring_liquid:"},
+        "🫗"
+    },
+    {
+        {":jar:"},
+        "🫙"
+    },
+    {
+        {":ring_buoy:"},
+        "🛟"
+    },
+    {
+        {":hamsa:"},
+        "🪬"
+    },
+    {
+        {":mirror_ball:"},
+        "🪩"
+    },
+    {
+        {":crutch:"},
+        "🩼"
+    },
+    {
+        {":x_ray:"},
+        "🩻"
+    },
+    {
+        {":bubbles:"},
+        "🫧"
+    },
+    {
+        {":bubble_tea:"},
+        "🧋"
+    },
+    {
+        {":identification_card:"},
+        "🪪"
+    },
+    {
+        {":anatomical_heart:"},
+        "🫀"
     }
 }
