@@ -1,4 +1,5 @@
-# PoodleChat
+<h1 align="center">PoodleChat 🗨️🐩</h1>
+
 
 ![PoodleChat screenshot](screenshot.png)
 
