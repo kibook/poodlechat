@@ -1,4 +1,10 @@
-# PoodleChat
+<h1 align="center">PoodleChat 🗨️🐩</h1>
+
+<p align="center">
+  <a href="https://github.com/TayMcKenzieNZ/poodlechat/"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/TayMcKenzieNZ/poodlechat/"><img src="https://img.shields.io/github/stars/TayMcKenzieNZ/poodlechat.svg?style=social" alt="Star"></a>
+  <a href="https://github.com/TayMcKenzieNZ/poodlechat/"><img src="https://img.shields.io/github/forks/TayMcKenzieNZ/poodlechat.svg?style=social&label=Forks" alt="Forks"></a>
+</p>
 
 ![PoodleChat screenshot](screenshot.png)
 
